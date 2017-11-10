@@ -12,6 +12,8 @@ def get_img_name(shortcut):
     """shortcuts:
     RNBKQBNRP - dark figures (d)
     rnbkqbnrp - light figures (l)
+    image name format example:
+    Chess_klt45.svg - white king
     """
     name = "Chess_{}{}t45.svg".format(shortcut.lower(),
                                       "l" if shortcut.isupper() else "d")
@@ -52,4 +54,5 @@ def write_html(insert_html, file_name="chessboard.htm"):
     f.close()
     return to_write
 
-write_html(svg_source_text(chessboard))
+if __name__ == "__main__":
+    write_html(svg_source_text(chessboard))
