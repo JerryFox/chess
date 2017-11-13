@@ -67,6 +67,18 @@ class Chessboard:
             pos = "RNBKQBNR" + "P" * 8 + "-" * 32 + "p" * 8 + "rnbkqbnr"
         elif pos == "blank":
             pos = "-" * 64
+        elif any(ch.isdigit() for ch in pos):
+            iret = ""
+            inum = 0
+            for c in pos:
+                if not c.isdigit():
+                    iret += "-" * inum
+                    inum = 0
+                    iret += c
+                else:
+                    inum = inum * 10 + int(c)
+            pos = iret
+
         pos = pos + "-" * (64 - len(pos))
         ch = [["" for c in range(8)] for r in range(8)]
         index = 0
