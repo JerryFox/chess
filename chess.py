@@ -29,16 +29,25 @@ def img_source_text(row, column, shortcut):
 def svg_source_text(chessboard):
     source = """<svg
 class="chessboard" height="810" version="1.1" width="810" xmlns="http://www.w3.org/2000/svg" style="overflow: hidden; position: relative;">
+<!--
+chessboard position string:
+{position}
+-->
 <image x="0" y="0" preserveAspectRatio="xMinYMin" \
 xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_01.svg" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></image>
 {images}</svg>
 """
+    position = ""
     images = ""
     for row in range(len(chessboard)):
         for column in range(len(chessboard[0])):
             if chessboard[row][column]:
                 images += img_source_text(row, column, chessboard[row][column]) + "\n"
-    return source.format(img_folder=CHESS_IMG_FOLDER, images=images)
+                position += chessboard[row][column]
+            else:
+                position += "-"
+
+    return source.format(position=position, img_folder=CHESS_IMG_FOLDER, images=images)
 
 def html_source_text(insert_html):
     html_template = """<!DOCTYPE html>
@@ -92,7 +101,7 @@ class Chessboard:
 
     def html(self):
         return html_source_text(svg_source_text(self.matrix()))
-    
+
 if __name__ == "__main__":
     f = open("chessboard.htm", "w")
     to_write = html_source_text(svg_source_text(chessboard))
