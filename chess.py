@@ -33,6 +33,7 @@ class="chessboard" height="810" version="1.1" width="810" xmlns="http://www.w3.o
 <!--
 chessboard position string:
 {position}
+{packed_position}
 -->
 <image x="0" y="0" preserveAspectRatio="xMinYMin" \
 xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_01.svg" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></image>
@@ -47,8 +48,9 @@ xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_0
                 position += chessboard[row][column]
             else:
                 position += "-"
-
-    return source.format(position=position, img_folder=CHESS_IMG_FOLDER, images=images)
+    ch = Chessboard(position)
+    pp = ch.packed_position()
+    return source.format(position=position, packed_position=pp, img_folder=CHESS_IMG_FOLDER, images=images)
 
 def html_source_text(insert_html):
     html_template = """<!DOCTYPE html>
@@ -149,7 +151,7 @@ class Chessboard:
                     col = ord(fig[1].upper()) - 65
             self.chessboard[row][col] = fig[0]
         self.position = self.packed_position()
-        
+
     def reset(self, positions):
         """remove figures from positions
         positions: str - <coords>
@@ -166,7 +168,7 @@ class Chessboard:
                 col = ord(pos[0].upper()) - 65
             self.chessboard[row][col] = ""
         self.position = self.packed_position()
-        
+
 if __name__ == "__main__":
     f = open("chessboard.htm", "w")
     to_write = html_source_text(svg_source_text(chessboard))
