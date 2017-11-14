@@ -2,6 +2,7 @@
 # html with SVG
 
 CHESS_IMG_FOLDER = "images/"
+FIGURES = "RNBKQBNRPrnbkqbnrp"
 
 chessboard = [["" for i in range(8)]for j in range(8)]
 
@@ -69,6 +70,7 @@ class Chessboard:
 
     def __init__(self, position="base"):
         self.position = position
+        self.matrix()
 
     def matrix(self):
         pos = self.position
@@ -87,7 +89,6 @@ class Chessboard:
                 else:
                     inum = inum * 10 + int(c)
             pos = iret
-
         pos = pos + "-" * (64 - len(pos))
         ch = [["" for c in range(8)] for r in range(8)]
         index = 0
@@ -97,11 +98,75 @@ class Chessboard:
                 cell = "" if (cell[0] in "-") else cell[0]
                 ch[r][c] = cell
                 index += 1
+        self.chessboard = ch
         return ch
 
     def html(self):
         return html_source_text(svg_source_text(self.matrix()))
 
+    def packed_position(self):
+        chessboard = self.chessboard
+        position = ""
+        inum = 0
+        pos_pack = ""
+        for row in range(len(chessboard)):
+            for column in range(len(chessboard[0])):
+                if chessboard[row][column]:
+                    position += chessboard[row][column]
+                    if inum:
+                        if inum > 1:
+                            pos_pack += str(inum)
+                        else:
+                            pos_pack += "-"
+                    pos_pack += chessboard[row][column]
+                    inum = 0
+                else:
+                    position += "-"
+                    inum += 1
+        if inum:
+            if inum > 1:
+                pos_pack += str(inum)
+            else:
+                pos_pack += "-"
+        self.position = pos_pack
+        return pos_pack
+
+    def set(self, figure_pos):
+        """set figures on chessboard
+        figure_pos: str - <figure_name><coords>
+        coords: 00 or a8
+        """
+        figures = figure_pos
+        while len(figures) > 2:
+            fig = figures[:3]
+            figures = figures[3:]
+            if fig[0] in FIGURES:
+                if fig[1].isdigit():    # 00 address
+                    row = int(fig[1])
+                    col = int(fig[2])
+                else:                   # a1 address
+                    row = 8 - int(fig[2])
+                    col = ord(fig[1].upper()) - 65
+            self.chessboard[row][col] = fig[0]
+        self.position = self.packed_position()
+        
+    def reset(self, positions):
+        """remove figures from positions
+        positions: str - <coords>
+        coords: 00 or a8
+        """
+        while len(positions) > 1:
+            pos = positions[:2]
+            positions = positions[2:]
+            if pos[0].isdigit():    # 00 address
+                row = int(pos[0])
+                col = int(pos[1])
+            else:                   # a1 address
+                row = 8 - int(pos[1])
+                col = ord(pos[0].upper()) - 65
+            self.chessboard[row][col] = ""
+        self.position = self.packed_position()
+        
 if __name__ == "__main__":
     f = open("chessboard.htm", "w")
     to_write = html_source_text(svg_source_text(chessboard))
