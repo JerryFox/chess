@@ -3,6 +3,9 @@
 
 from bottle import default_app, route, static_file
 import os, os.path
+import chess
+
+chess.CHESS_IMG_FOLDER = "/files/chess/images/"
 
 ROOT = "/home/vysoky/seminar"   # where are files serving from
 PATH_PREFIX = "/files"          # path prefix in browser
@@ -11,12 +14,22 @@ PATH_PREFIX = "/files"          # path prefix in browser
 def kudy_z_nudy():
     return "Kudy z nudy..."
 
+@route("/chessboard/<position>/reset/<positions>")
+def chessboard_reset(position="base", positions=""):
+    ch = chess.Chessboard(position)
+    ch.reset(positions)
+    return ch.html()
+
+@route("/chessboard/<position>/set/<fig_positions>")
+def chessboard_set(position="blank", fig_positions=""):
+    ch = chess.Chessboard(position)
+    ch.set(fig_positions)
+    return ch.html()
+
 @route("/chessboard")
 @route("/chessboard/")
 @route("/chessboard/<position>")
 def chessboard(position="base"):
-    import chess
-    chess.CHESS_IMG_FOLDER = "/files/chess/images/"
     ch = chess.Chessboard(position)
     return ch.html()
 
