@@ -23,13 +23,76 @@ def get_img_name(shortcut):
     return name
 
 def img_source_text(row, column, shortcut):
-    text = '<image x="{}" y="{}" preserveAspectRatio="xMinYMin" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{}" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); " width="80" height="80"></image>'
+    text = """<image x="{}" y="{}" preserveAspectRatio="xMinYMin" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xlink:href="{}" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); "
+    width="80" height="80"
+    class="draggable"
+    transform="matrix(1 0 0 1 0 0)"
+    onmousedown="selectElement(evt)"
+    >
+    </image>"""
     return text.format(15 + column * 100, 13 + row * 100,
                        CHESS_IMG_FOLDER + get_img_name(shortcut))
 
 def svg_source_text(chessboard):
-    source = """<svg
-class="chessboard" height="810" version="1.1" width="810" xmlns="http://www.w3.org/2000/svg" style="overflow: hidden; position: relative;">
+    source = """<svg class="chessboard"
+    height="810" version="1.1" width="1000" xmlns="http://www.w3.org/2000/svg"
+    style="overflow: hidden; position: relative;">
+		<style>
+		    .draggable {{
+                cursor: move;
+		    }}
+		</style>
+    <script type="text/ecmascript"><![CDATA[
+    var selectedElement = 0;
+    var currentX = 0;
+    var currentY = 0;
+    var currentMatrix = 0;
+
+    function selectElement(evt) {{
+      selectedElement = evt.target;
+      currentX = evt.clientX;
+      currentY = evt.clientY;
+      currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7,-1).split(' ');
+
+      for(var i=0; i<currentMatrix.length; i++) {{
+        currentMatrix[i] = parseFloat(currentMatrix[i]);
+      }}
+
+      selectedElement.setAttributeNS(null, "onmousemove", "moveElement(evt)");
+      selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
+      selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
+    }}
+
+    function moveElement(evt) {{
+      var dx = evt.clientX - currentX;
+      var dy = evt.clientY - currentY;
+      currentMatrix[4] += dx;
+      currentMatrix[5] += dy;
+
+      selectedElement.setAttributeNS(null, "transform", "matrix(" + currentMatrix.join(' ') + ")");
+      currentX = evt.clientX;
+      currentY = evt.clientY;
+    }}
+
+    function deselectElement(evt) {{
+      if(selectedElement != 0){{
+          currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7,-1).split(' ');
+          for(var i=0; i<currentMatrix.length; i++) {{
+            currentMatrix[i] = parseFloat(currentMatrix[i]);
+          }}
+          currentMatrix[4] = 100 * Math.round(currentMatrix[4] / 100);
+          currentMatrix[5] = 100 * Math.round(currentMatrix[5] / 100);
+          selectedElement.setAttributeNS(null, "transform", "matrix(" + currentMatrix.join(' ') + ")");
+
+          selectedElement.removeAttributeNS(null, "onmousemove");
+          selectedElement.removeAttributeNS(null, "onmouseout");
+          selectedElement.removeAttributeNS(null, "onmouseup");
+          selectedElement = 0;
+          }}
+        }}
+
+    ]]> </script>
 <!--
 chessboard position string:
 {position}
@@ -60,7 +123,7 @@ def html_source_text(insert_html):
 	<head>
 		<title>chessboard</title>
 		<meta charset=utf-8">
-	</head>
+ 	</head>
 	<body>
 {insert_html}
 	</body>
