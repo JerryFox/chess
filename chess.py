@@ -173,7 +173,7 @@ class Chessboard:
         self.chessboard = ch
         return ch
 
-    def html(self):
+    def get_html(self):
         return html_source_text(svg_source_text(self.chessboard))
 
     def get_packed_position(self):

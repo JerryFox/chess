@@ -17,21 +17,21 @@ def kudy_z_nudy():
 @route("/chessboard/<position>/reset/<positions>")
 def chessboard_reset(position="base", positions=""):
     ch = chess.Chessboard(position)
-    ch.reset(positions)
-    return ch.html()
+    ch.remove_figures(positions)
+    return ch.get_html()
 
 @route("/chessboard/<position>/set/<fig_positions>")
 def chessboard_set(position="blank", fig_positions=""):
     ch = chess.Chessboard(position)
-    ch.set(fig_positions)
-    return ch.html()
+    ch.add_figures(fig_positions)
+    return ch.get_html()
 
 @route("/chessboard")
 @route("/chessboard/")
 @route("/chessboard/<position>")
 def chessboard(position="base"):
     ch = chess.Chessboard(position)
-    return ch.html()
+    return ch.get_html()
 
 @route(PATH_PREFIX)
 @route(PATH_PREFIX + '<filepath:path>')
