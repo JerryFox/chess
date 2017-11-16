@@ -70,7 +70,7 @@ def server_static(filepath="/"):
         for item in list_isfile:
             iclass = "file" if item[0] else "folder"
             line = '<li class="{}"><a href="{}">{}</a></li>\n'
-            items += line.format(iclass,PATH_PREFIX + os.path.join(filepath, item[1]), item[1])
+            items += line.format(iclass, os.path.join(PATH_PREFIX, filepath, item[1]), item[1])
         return html_template.format(path=filepath, items=items)
     else:
         return static_file(filepath, root=ROOT)
