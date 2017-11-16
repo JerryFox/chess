@@ -100,7 +100,8 @@ chessboard position string:
 -->
 <image x="0" y="0" preserveAspectRatio="xMinYMin" \
 xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_01.svg" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></image>
-{images}</svg>
+{images}
+</svg>
 """
     position = ""
     images = ""
@@ -112,8 +113,9 @@ xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_0
             else:
                 position += "-"
     ch = Chessboard(position)
-    pp = ch.packed_position()
-    return source.format(position=position, packed_position=pp, img_folder=CHESS_IMG_FOLDER, images=images)
+    pp = ch.get_packed_position()
+    return source.format(position=position, packed_position=pp,
+                         img_folder=CHESS_IMG_FOLDER, images=images)
 
 def html_source_text(insert_html):
     html_template = """<!DOCTYPE html>
@@ -135,9 +137,9 @@ class Chessboard:
 
     def __init__(self, position="base"):
         self.position = position
-        self.matrix()
+        self.chessboard = self.get_chessboard()
 
-    def matrix(self):
+    def get_chessboard(self):
         pos = self.position
         if pos == "base":
             pos = "RNBKQBNR" + "P" * 8 + "-" * 32 + "p" * 8 + "rnbkqbnr"
@@ -167,9 +169,9 @@ class Chessboard:
         return ch
 
     def html(self):
-        return html_source_text(svg_source_text(self.matrix()))
+        return html_source_text(svg_source_text(self.chessboard))
 
-    def packed_position(self):
+    def get_packed_position(self):
         chessboard = self.chessboard
         position = ""
         inum = 0
@@ -196,8 +198,8 @@ class Chessboard:
         self.position = pos_pack
         return pos_pack
 
-    def set(self, figure_pos):
-        """set figures on chessboard
+    def add_figures(self, figure_pos):
+        """add figures on chessboard
         figure_pos: str - <figure_name><coords>
         coords: 00 or a8
         """
@@ -213,9 +215,9 @@ class Chessboard:
                     row = 8 - int(fig[2])
                     col = ord(fig[1].upper()) - 65
             self.chessboard[row][col] = fig[0]
-        self.position = self.packed_position()
+        self.position = self.get_packed_position()
 
-    def reset(self, positions):
+    def remove_figures(self, positions):
         """remove figures from positions
         positions: str - <coords>
         coords: 00 or a8
@@ -230,7 +232,7 @@ class Chessboard:
                 row = 8 - int(pos[1])
                 col = ord(pos[0].upper()) - 65
             self.chessboard[row][col] = ""
-        self.position = self.packed_position()
+        self.position = self.get_packed_position()
 
 if __name__ == "__main__":
     f = open("chessboard.htm", "w")
