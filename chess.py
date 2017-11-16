@@ -4,45 +4,7 @@
 CHESS_IMG_FOLDER = "images/"
 FIGURES = "RNBKQBNRPrnbkqbnrp"
 
-chessboard = [["" for i in range(8)]for j in range(8)]
-
-chessboard[0] = list("RNBKQBNR")
-chessboard[1] = list("P" * 8)
-chessboard[6] = list("p" * 8)
-chessboard[7] = list("rnbkqbnr")
-
-def get_img_name(shortcut):
-    """shortcuts:
-    RNBKQBNRP - dark figures (d)
-    rnbkqbnrp - light figures (l)
-    image name format example:
-    Chess_klt45.svg - white king
-    """
-    name = "Chess_{}{}t45.svg".format(shortcut.lower(),
-                                      "l" if shortcut.isupper() else "d")
-    return name
-
-def img_source_text(row, column, shortcut):
-    text = """<image x="{}" y="{}" preserveAspectRatio="xMinYMin" xmlns:xlink="http://www.w3.org/1999/xlink"
-    xlink:href="{}" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); "
-    width="80" height="80"
-    class="draggable"
-    transform="matrix(1 0 0 1 0 0)"
-    onmousedown="selectElement(evt)"
-    >
-    </image>"""
-    return text.format(15 + column * 100, 13 + row * 100,
-                       CHESS_IMG_FOLDER + get_img_name(shortcut))
-
-def svg_source_text(chessboard):
-    source = """<svg class="chessboard"
-    height="810" version="1.1" width="1000" xmlns="http://www.w3.org/2000/svg"
-    style="overflow: hidden; position: relative;">
-		<style>
-		    .draggable {{
-                cursor: move;
-		    }}
-		</style>
+SVG_SCRIPT = """
     <script type="text/ecmascript"><![CDATA[
     var selectedElement = 0;
     var currentX = 0;
@@ -92,7 +54,50 @@ def svg_source_text(chessboard):
           }}
         }}
 
-    ]]> </script>
+    ]]>
+    </script>
+"""
+
+chessboard = [["" for i in range(8)]for j in range(8)]
+
+chessboard[0] = list("RNBKQBNR")
+chessboard[1] = list("P" * 8)
+chessboard[6] = list("p" * 8)
+chessboard[7] = list("rnbkqbnr")
+
+def get_img_name(shortcut):
+    """shortcuts:
+    RNBKQBNRP - dark figures (d)
+    rnbkqbnrp - light figures (l)
+    image name format example:
+    Chess_klt45.svg - white king
+    """
+    name = "Chess_{}{}t45.svg".format(shortcut.lower(),
+                                      "l" if shortcut.isupper() else "d")
+    return name
+
+def img_source_text(row, column, shortcut):
+    text = """<image x="{}" y="{}" preserveAspectRatio="xMinYMin" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xlink:href="{}" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); "
+    width="80" height="80"
+    class="draggable"
+    transform="matrix(1 0 0 1 0 0)"
+    onmousedown="selectElement(evt)"
+    >
+    </image>"""
+    return text.format(15 + column * 100, 13 + row * 100,
+                       CHESS_IMG_FOLDER + get_img_name(shortcut))
+
+def svg_source_text(chessboard):
+    source = """<svg class="chessboard"
+    height="810" version=/KQ25p36/reset/00"1.1" width="1000" xmlns="http://www.w3.org/2000/svg"
+    style="overflow: hidden; position: relative;">
+		<style>
+		    .draggable {{
+                cursor: move;
+		    }}
+		</style>
+{script}
 <!--
 chessboard position string:
 {position}
@@ -114,7 +119,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_0
                 position += "-"
     ch = Chessboard(position)
     pp = ch.get_packed_position()
-    return source.format(position=position, packed_position=pp,
+    return source.format(script=SVG_SCRIPT, position=position, packed_position=pp,
                          img_folder=CHESS_IMG_FOLDER, images=images)
 
 def html_source_text(insert_html):
