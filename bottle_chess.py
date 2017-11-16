@@ -12,16 +12,16 @@ PATH_PREFIX = "/files"          # path prefix in browser
 
 @route("/")
 def kudy_z_nudy():
-    return "Kudy z nudy..."
+    return "<h1>nothing here but love...</h1>"
 
 @route("/chessboard/<position>/reset/<positions>")
-def chessboard_reset(position="base", positions=""):
+def chessboard_reset_fields(position="base", positions=""):
     ch = chess.Chessboard(position)
     ch.remove_figures(positions)
     return ch.get_html()
 
 @route("/chessboard/<position>/set/<fig_positions>")
-def chessboard_set(position="blank", fig_positions=""):
+def chessboard_set_fields(position="blank", fig_positions=""):
     ch = chess.Chessboard(position)
     ch.add_figures(fig_positions)
     return ch.get_html()
@@ -70,7 +70,7 @@ def server_static(filepath="/"):
         for item in list_isfile:
             iclass = "file" if item[0] else "folder"
             line = '<li class="{}"><a href="{}">{}</a></li>\n'
-            items += line.format(iclass, os.path.join(PATH_PREFIX, filepath, item[1]), item[1])
+            items += line.format(iclass, PATH_PREFIX + os.path.join(filepath, item[1]), item[1])
         return html_template.format(path=filepath, items=items)
     else:
         return static_file(filepath, root=ROOT)
