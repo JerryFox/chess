@@ -199,7 +199,6 @@ class Chessboard:
                 pos_pack += str(number_in_string)
             else:
                 pos_pack += "-"
-        self.position = pos_pack
         return pos_pack
 
     def set_position_to_packed(self):
