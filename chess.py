@@ -145,33 +145,32 @@ class Chessboard:
         self.chessboard = self.get_chessboard()
 
     def get_chessboard(self):
-        pos = self.position
-        if pos == "base":
-            pos = "RNBKQBNR" + "P" * 8 + "-" * 32 + "p" * 8 + "rnbkqbnr"
-        elif pos == "blank":
-            pos = "-" * 64
-        elif any(ch.isdigit() for ch in pos):
-            iret = ""
-            inum = 0
-            for c in pos:
-                if not c.isdigit():
-                    iret += "-" * inum
-                    inum = 0
-                    iret += c
+        position = self.position
+        if position == "base":
+            position = "RNBKQBNR" + "P" * 8 + "-" * 32 + "p" * 8 + "rnbkqbnr"
+        elif position == "blank":
+            position = "-" * 64
+        elif any(character.isdigit() for character in position):
+            unpacked_position = ""
+            number_in_string = 0
+            for character in position:
+                if not character.isdigit():
+                    unpacked_position += "-" * number_in_string
+                    number_in_string = 0
+                    unpacked_position += character
                 else:
-                    inum = inum * 10 + int(c)
-            pos = iret
-        pos = pos + "-" * (64 - len(pos))
-        ch = [["" for c in range(8)] for r in range(8)]
+                    number_in_string = number_in_string * 10 + int(character)
+            position = unpacked_position
+        position = position + "-" * (64 - len(position))
+        chessboard = [["" for column in range(8)] for r in range(8)]
         index = 0
-        for r in range(len(ch)):
-            for c in range(len(ch[r])):
-                cell = pos[index]
-                cell = "" if (cell[0] in "-") else cell[0]
-                ch[r][c] = cell
+        for row in range(len(chessboard)):
+            for column in range(len(chessboard[row])):
+                cell = position[index]
+                cell = "" if (cell[0] in "-_ ") else cell[0]    # free cell
+                chessboard[row][column] = cell                  # figure in cell
                 index += 1
-        self.chessboard = ch
-        return ch
+        return chessboard
 
     def get_html(self):
         return html_source_text(svg_source_text(self.chessboard))
@@ -179,53 +178,60 @@ class Chessboard:
     def get_packed_position(self):
         chessboard = self.chessboard
         position = ""
-        inum = 0
+        number_in_string = 0
         pos_pack = ""
         for row in range(len(chessboard)):
             for column in range(len(chessboard[0])):
                 if chessboard[row][column]:
                     position += chessboard[row][column]
-                    if inum:
-                        if inum > 1:
-                            pos_pack += str(inum)
+                    if number_in_string:
+                        if number_in_string > 1:
+                            pos_pack += str(number_in_string)
                         else:
                             pos_pack += "-"
                     pos_pack += chessboard[row][column]
-                    inum = 0
+                    number_in_string = 0
                 else:
                     position += "-"
-                    inum += 1
-        if inum:
-            if inum > 1:
-                pos_pack += str(inum)
+                    number_in_string += 1
+        if number_in_string:
+            if number_in_string > 1:
+                pos_pack += str(number_in_string)
             else:
                 pos_pack += "-"
         self.position = pos_pack
         return pos_pack
 
-    def add_figures(self, figure_pos):
-        """add figures on chessboard
-        figure_pos: str - <figure_name><coords>
-        coords: 00 or a8
-        """
-        figures = figure_pos
-        while len(figures) > 2:
-            fig = figures[:3]
-            figures = figures[3:]
-            if fig[0] in FIGURES:
-                if fig[1].isdigit():    # 00 address
-                    row = int(fig[1])
-                    col = int(fig[2])
-                else:                   # a1 address
-                    row = 8 - int(fig[2])
-                    col = ord(fig[1].upper()) - 65
-            self.chessboard[row][col] = fig[0]
+    def set_position_to_packed(self):
         self.position = self.get_packed_position()
+
+    def set_chessboard_from_position(self):
+        self.chessboard = self.get_chessboard()
+
+    def add_figures(self, figure_positions):
+        """add figures on chessboard
+        figure_positions: str - <figure_name><coords>
+        coords: 00 or a8
+        example: "P00P11pg2ph1"
+        """
+        while len(figure_positions) > 2:
+            figure = figure_positions[:3]
+            figure_positions = figure_positions[3:]
+            if figure[0] in FIGURES:
+                if figure[1].isdigit():     # 00 address
+                    row = int(figure[1])
+                    col = int(figure[2])
+                else:                       # a1 address
+                    row = 8 - int(figure[2])
+                    col = ord(figure[1].upper()) - 65
+            self.chessboard[row][col] = figure[0]
+        self.set_position_to_packed()
 
     def remove_figures(self, positions):
         """remove figures from positions
         positions: str - <coords>
         coords: 00 or a8
+        example: "0011g2h1"
         """
         while len(positions) > 1:
             pos = positions[:2]
@@ -237,7 +243,7 @@ class Chessboard:
                 row = 8 - int(pos[1])
                 col = ord(pos[0].upper()) - 65
             self.chessboard[row][col] = ""
-        self.position = self.get_packed_position()
+        self.set_position_to_packed()
 
 if __name__ == "__main__":
     f = open("chessboard.htm", "w")
