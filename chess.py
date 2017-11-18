@@ -11,22 +11,30 @@ SVG_SCRIPT = """
     var currentY = 0;
     var currentMatrix = 0;
 
-    function selectElement(evt) {{
+    function selectElement(evt) {
       selectedElement = evt.target;
       currentX = evt.clientX;
       currentY = evt.clientY;
+
       currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7,-1).split(' ');
 
-      for(var i=0; i<currentMatrix.length; i++) {{
+      for(var i=0; i<currentMatrix.length; i++) {
         currentMatrix[i] = parseFloat(currentMatrix[i]);
-      }}
+      }
+      var x = parseFloat(selectedElement.getAttribute("x"));
+      x += currentMatrix[4]
 
       selectedElement.setAttributeNS(null, "onmousemove", "moveElement(evt)");
       selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
       selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
-    }}
+      if (x > 810) {
+        var clone = selectedElement.cloneNode(true);
+        selectedElement.insertAdjacentElement('beforebegin', clone);
+      }
+      document.querySelector('.figures').insertAdjacentElement('beforeend',selectedElement)
+    }
 
-    function moveElement(evt) {{
+    function moveElement(evt) {
       var dx = evt.clientX - currentX;
       var dy = evt.clientY - currentY;
       currentMatrix[4] += dx;
@@ -35,14 +43,14 @@ SVG_SCRIPT = """
       selectedElement.setAttributeNS(null, "transform", "matrix(" + currentMatrix.join(' ') + ")");
       currentX = evt.clientX;
       currentY = evt.clientY;
-    }}
+    }
 
-    function deselectElement(evt) {{
-      if(selectedElement != 0){{
+    function deselectElement(evt) {
+      if(selectedElement != 0){
           currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7,-1).split(' ');
-          for(var i=0; i<currentMatrix.length; i++) {{
+          for(var i=0; i<currentMatrix.length; i++) {
             currentMatrix[i] = parseFloat(currentMatrix[i]);
-          }}
+          }
           currentMatrix[4] = 100 * Math.round(currentMatrix[4] / 100);
           currentMatrix[5] = 100 * Math.round(currentMatrix[5] / 100);
           selectedElement.setAttributeNS(null, "transform", "matrix(" + currentMatrix.join(' ') + ")");
@@ -50,9 +58,14 @@ SVG_SCRIPT = """
           selectedElement.removeAttributeNS(null, "onmousemove");
           selectedElement.removeAttributeNS(null, "onmouseout");
           selectedElement.removeAttributeNS(null, "onmouseup");
+          var x = parseFloat(selectedElement.getAttribute("x"));
+          x += currentMatrix[4]
+          if (x > 810) {
+            selectedElement.remove();
+          }
           selectedElement = 0;
-          }}
-        }}
+          }
+        }
 
     ]]>
     </script>
@@ -88,6 +101,16 @@ def img_source_text(row, column, shortcut):
     return text.format(15 + column * 100, 13 + row * 100,
                        CHESS_IMG_FOLDER + get_img_name(shortcut))
 
+def beside_figures_images():
+    add_board = [["K", "Q"], ["R", "B"], ["N", "P"], ["", ""], ["", ""],
+                 ["k", "q"], ["r", "b"], ["n", "p"]]
+    images = ""
+    for row in range(len(add_board)):
+        for column in range(len(add_board[0])):
+            if add_board[row][column]:
+                images += img_source_text(row, column + 8, add_board[row][column]) + "\n"
+    return images
+
 def svg_source_text(chessboard):
     source = """<svg class="chessboard"
     height="810" version=/KQ25p36/reset/00"1.1" width="1000" xmlns="http://www.w3.org/2000/svg"
@@ -104,8 +127,13 @@ chessboard position string:
 {packed_position}
 -->
 <image x="0" y="0" preserveAspectRatio="xMinYMin" \
-xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_01.svg" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></image>
+    xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_01.svg"
+    style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+</image>
+<g class="figures">
 {images}
+{beside_figures}
+</g>
 </svg>
 """
     position = ""
@@ -119,8 +147,9 @@ xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_0
                 position += "-"
     ch = Chessboard(position)
     pp = ch.get_packed_position()
+    beside_figures = beside_figures_images()
     return source.format(script=SVG_SCRIPT, position=position, packed_position=pp,
-                         img_folder=CHESS_IMG_FOLDER, images=images)
+            img_folder=CHESS_IMG_FOLDER, images=images, beside_figures=beside_figures)
 
 def html_source_text(insert_html):
     html_template = """<!DOCTYPE html>
