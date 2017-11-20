@@ -113,7 +113,7 @@ def beside_figures_images():
 
 def svg_source_text(chessboard):
     source = """<svg class="chessboard"
-    height="810" version=/KQ25p36/reset/00"1.1" width="1000" xmlns="http://www.w3.org/2000/svg"
+    height="810" version="1.1" width="1000" xmlns="http://www.w3.org/2000/svg"
     style="overflow: hidden; position: relative;">
 		<style>
 		    .draggable {{
