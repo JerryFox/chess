@@ -1,75 +1,9 @@
 # chessboard generation
 # html with SVG
 
-CHESS_IMG_FOLDER = "images/"
+CHESS_IMG_FOLDER = "static/images/"
 FIGURES = "RNBKQBNRPrnbkqbnrp"
-
-SVG_SCRIPT = """
-    <script type="text/ecmascript"><![CDATA[
-    var selectedElement = 0;
-    var currentX = 0;
-    var currentY = 0;
-    var currentMatrix = 0;
-
-    function selectElement(evt) {
-      selectedElement = evt.target;
-      currentX = evt.clientX;
-      currentY = evt.clientY;
-
-      currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7,-1).split(' ');
-
-      for(var i=0; i<currentMatrix.length; i++) {
-        currentMatrix[i] = parseFloat(currentMatrix[i]);
-      }
-      var x = parseFloat(selectedElement.getAttribute("x"));
-      x += currentMatrix[4]
-
-      selectedElement.setAttributeNS(null, "onmousemove", "moveElement(evt)");
-      selectedElement.setAttributeNS(null, "onmouseout", "deselectElement(evt)");
-      selectedElement.setAttributeNS(null, "onmouseup", "deselectElement(evt)");
-      if (x > 810) {
-        var clone = selectedElement.cloneNode(true);
-        selectedElement.insertAdjacentElement('beforebegin', clone);
-      }
-      document.querySelector('.figures').insertAdjacentElement('beforeend',selectedElement)
-    }
-
-    function moveElement(evt) {
-      var dx = evt.clientX - currentX;
-      var dy = evt.clientY - currentY;
-      currentMatrix[4] += dx;
-      currentMatrix[5] += dy;
-
-      selectedElement.setAttributeNS(null, "transform", "matrix(" + currentMatrix.join(' ') + ")");
-      currentX = evt.clientX;
-      currentY = evt.clientY;
-    }
-
-    function deselectElement(evt) {
-      if(selectedElement != 0){
-          currentMatrix = selectedElement.getAttributeNS(null, "transform").slice(7,-1).split(' ');
-          for(var i=0; i<currentMatrix.length; i++) {
-            currentMatrix[i] = parseFloat(currentMatrix[i]);
-          }
-          currentMatrix[4] = 100 * Math.round(currentMatrix[4] / 100);
-          currentMatrix[5] = 100 * Math.round(currentMatrix[5] / 100);
-          selectedElement.setAttributeNS(null, "transform", "matrix(" + currentMatrix.join(' ') + ")");
-
-          selectedElement.removeAttributeNS(null, "onmousemove");
-          selectedElement.removeAttributeNS(null, "onmouseout");
-          selectedElement.removeAttributeNS(null, "onmouseup");
-          var x = parseFloat(selectedElement.getAttribute("x"));
-          x += currentMatrix[4]
-          if (x > 810) {
-            selectedElement.remove();
-          }
-          selectedElement = 0;
-          }
-        }
-
-    ]]>
-    </script>
-"""
+SCRIPT_FOLDER = "static/scripts/"
 
 chessboard = [["" for i in range(8)]for j in range(8)]
 
@@ -93,7 +27,7 @@ def img_source_text(row, column, shortcut):
     text = """<image x="{}" y="{}" preserveAspectRatio="xMinYMin" xmlns:xlink="http://www.w3.org/1999/xlink"
     xlink:href="{}" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); "
     width="80" height="80"
-    class="draggable"
+    class="chess-figure draggable"
     transform="matrix(1 0 0 1 0 0)"
     onmousedown="selectElement(evt)"
     >
@@ -120,7 +54,6 @@ def svg_source_text(chessboard):
                 cursor: move;
 		    }}
 		</style>
-{script}
 <!--
 chessboard position string:
 {position}
@@ -148,7 +81,7 @@ chessboard position string:
     ch = Chessboard(position)
     pp = ch.get_packed_position()
     beside_figures = beside_figures_images()
-    return source.format(script=SVG_SCRIPT, position=position, packed_position=pp,
+    return source.format(position=position, packed_position=pp,
             img_folder=CHESS_IMG_FOLDER, images=images, beside_figures=beside_figures)
 
 def html_source_text(insert_html):
@@ -159,13 +92,14 @@ def html_source_text(insert_html):
 	<head>
 		<title>chessboard</title>
 		<meta charset=utf-8">
+        <script src="{script_folder}move_figures.js"></script>
  	</head>
 	<body>
 {insert_html}
 	</body>
 </html>
 """
-    return html_template.format(insert_html=insert_html)
+    return html_template.format(script_folder=SCRIPT_FOLDER, insert_html=insert_html)
 
 class Chessboard:
 

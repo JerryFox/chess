@@ -1,18 +1,27 @@
 # files serving with directory list
 # simple bottle application
 
+# chess exercise application for seminar
+
 from bottle import default_app, route, static_file
 import os, os.path
 import chess
 
-chess.CHESS_IMG_FOLDER = "/files/chess/images/"
+chess.CHESS_IMG_FOLDER = "/static/images/"
+chess.SCRIPT_FOLDER = "/static/scripts/"
 
 ROOT = "/home/vysoky/seminar"   # where are files serving from
 PATH_PREFIX = "/files"          # path prefix in browser
 
+
 @route("/")
 def kudy_z_nudy():
     return "<h1>nothing here but love...</h1>"
+
+# static files
+@route('/static/<filename:path>')
+def send_static(filename):
+    return static_file(filename, root='/home/vysoky/projects/chess/static')
 
 @route("/chessboard/<position>/reset/<positions>")
 def chessboard_reset_fields(position="base", positions=""):
