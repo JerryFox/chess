@@ -98,7 +98,8 @@ def html_source_text(insert_html):
  	</head>
     <body onload="brython(1)">
         <div>
-            <button id="but-hide-show">hide/show</button>
+            <button id="but-chessboard-hide-show">chess_hide/show</button>
+            <button id="but-console-hide-show">console_hi/sh</button>
             <button id="but-fig-count">count fig.</button>
             <button id="but-zoom-out">◀</button>
             <span id="zoom-display"></span>
@@ -111,7 +112,7 @@ def html_source_text(insert_html):
             </div>
 
         </div>
-        <div>
+        <div id="console" class="console">
             <!-- Brython console -->
             <textarea id=code class=codearea rows=20></textarea>
             <div id=content></div>

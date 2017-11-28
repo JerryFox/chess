@@ -106,9 +106,20 @@ def count(event):
     document["output"].html = output
     alert("figures count total: {} \n on board: {}".format(figures_count, on_board))
 
-def hide_show(event):
+def chessboard_hide_show(event):
     try:
         c = document.get(selector=".chessboard")[0]
+    except:
+        pass
+    else:
+        if "hidden" in c.getAttribute("class"):
+            c.classList.remove("hidden")
+        else:
+            c.classList.add("hidden")
+
+def console_hide_show(event):
+    try:
+        c = document["console"]
     except:
         pass
     else:
@@ -143,7 +154,8 @@ def zoom_in(event):
 
 
 document["but-fig-count"].bind("click", count)
-document["but-hide-show"].bind("click", hide_show)
+document["but-chessboard-hide-show"].bind("click", chessboard_hide_show)
+document["but-console-hide-show"].bind("click", console_hide_show)
 document["but-zoom-out"].bind("click", zoom_out)
 document["but-zoom-in"].bind("click", zoom_in)
 
