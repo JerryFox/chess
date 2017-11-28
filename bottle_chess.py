@@ -9,6 +9,7 @@ import chess
 
 chess.CHESS_IMG_FOLDER = "/static/images/"
 chess.SCRIPT_FOLDER = "/static/scripts/"
+chess.CSS_FOLDER = "/static/css/"
 
 ROOT = "/home/vysoky/seminar"   # where are files serving from
 PATH_PREFIX = "/files"          # path prefix in browser
@@ -17,6 +18,12 @@ PATH_PREFIX = "/files"          # path prefix in browser
 @route("/")
 def kudy_z_nudy():
     return "<h1>nothing here but love...</h1>"
+
+# static file chess.py (due to import import chess)
+@route('/chessboard/chess.py')
+@route('/chess.py')
+def send_static_chess():
+    return static_file("chess.py", root='/home/vysoky/projects/chess/static/scripts')
 
 # static files
 @route('/static/<filename:path>')

@@ -30,6 +30,7 @@ def img_source_text(row, column, shortcut):
     width="80" height="80"
     class="chess-figure draggable"
     transform="matrix(1 0 0 1 0 0)"
+    onmousedown="selectElement(evt)"
     >
     </image>"""
     return text.format(15 + column * 100, 13 + row * 100,
@@ -46,8 +47,8 @@ def beside_figures_images():
     return images
 
 def svg_source_text(chessboard):
-    source = """<svg id="chessboard" class="chessboard" viewBox="0 0 1105 810"
-    version="1.1" width="100%" xmlns="http://www.w3.org/2000/svg"
+    source = """<svg class="chessboard"
+    height="810" version="1.1" width="1000" xmlns="http://www.w3.org/2000/svg"
     style="overflow: hidden; position: relative;">
 		<style>
 		    .draggable {{
@@ -86,41 +87,19 @@ chessboard position string:
 
 def html_source_text(insert_html):
     html_template = """<!DOCTYPE html>
+    <title>Chessboard</title>
+    <meta
 <html>
 	<head>
 		<title>chessboard</title>
 		<meta charset=utf-8">
 		<link rel="stylesheet" type="text/css" href="{css_folder}chess.css">
+        <script src="{script_folder}move_figures.js"></script>
         <script src="{script_folder}brython.js"></script>
         <script src="{script_folder}brython_stdlib.js"></script>
-
-        <script type="text/python3" src="{script_folder}chess_brython.py"></script>
  	</head>
-    <body onload="brython(1)">
-        <div>
-            <button id="but-hide-show">hide/show</button>
-            <button id="but-fig-count">count fig.</button>
-            <button id="but-zoom-out">◀</button>
-            <span id="zoom-display"></span>
-            <button id="but-zoom-in">▶</button>
-            <span id="coordinates"></span>
-
-
-            <div id="chess-container">
+	<body>
 {insert_html}
-            </div>
-
-        </div>
-        <div>
-            <!-- Brython console -->
-            <textarea id=code class=codearea rows=20></textarea>
-            <div id=content></div>
-            <script type="text/python3" src="{script_folder}console.py" id="__main__"></script>
-            <!-- /Brython console -->
-        </div>
-        <div id="output">
-        </div>
-
 	</body>
 </html>
 """

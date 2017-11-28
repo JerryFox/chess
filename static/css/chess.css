@@ -1,0 +1,123 @@
+/* brython examples */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    font-size: 14px;
+    font-family: Helvetica;
+    margin: 0;
+    padding: 0;
+}
+
+a{
+    color: #333;
+}
+a.menu{
+    text-decoration: none;
+}
+a.menu:hover{
+    background-color: #ccc;
+}
+a:visited{
+    color: #333;
+}
+
+li{
+    list-style-type: none;
+}
+
+.panel{
+    position: absolute;
+    top: 100;
+    left: 10%;
+    width: 80%;
+    height: 300;
+    background-color: #ccc;
+    padding: 10;
+}
+
+button{
+    background-color: #dadada;
+    color: #113;
+    border-style: solid;
+    border-color: #000;
+    border-width: 1px;
+    border-radius: 3px;
+    font-size: 1.2em;
+}
+button.btn-ls{
+    font-size: 1em;
+}
+
+div.example{
+    margin-top: 2em;
+    #display: none;
+}
+
+pre{
+    font-family: Consolas, Courier New;
+    color: #113;
+    background: linear-gradient(to right, #ccc, #fff);
+    border-width: 0 0 0 2;
+    border-color: #aac;
+    border-style: solid;
+    margin-top: 2em;
+}
+
+pre.html{
+    padding: 0.5em;
+}
+
+.zone{
+    margin-left: 5em;
+    padding: 1em;
+    border-width: 1px;
+    border-color: #333;
+    border-style: solid;
+    width: 20em;
+}
+
+code{
+    font-family: Consolas, Courier New;
+    color: #113;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+}
+
+code.file{
+    background-color: #fff;
+    font-weigth: bold;
+    font-style: italic;
+}
+
+.up{
+    font-size: 1.2em;
+}
+.down{
+    font-size:0.8em;
+}
+
+
+
+
+/* brython interpreter */
+.codearea {
+    background-color:#000;
+    color:#fff;
+    font-family:'Oxygen Mono', Consolas, 'Liberation Mono', 'DejaVu Sans Mono', monospace;
+    font-size:18px;
+    overflow:auto
+}
+textarea {
+    height: 300px;
+    width: 98%;
+}
+
+
+
+
+.hidden {
+    display: none;
+}
