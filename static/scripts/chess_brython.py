@@ -79,7 +79,7 @@ def move_element(evt):
 
 
 
-def count(event):
+def figures_counting(event):
     figures_count = 0
     on_board = 0
     chessboard = Chessboard("blank")
@@ -105,6 +105,27 @@ def count(event):
     output += "<h3>position: {}</h3>".format(chessboard.position)
     document["output"].html = output
     alert("figures count total: {} \n on board: {}".format(figures_count, on_board))
+    #browser.window.open("http://vysoky.pythonanywhere.com/chessboard/" + chessboard.position, "_self")
+    return chessboard.position
+
+def go_to_position(event):
+    import browser
+    chessboard = Chessboard("blank")
+    for figure in document.get(selector=".chess-figure"):
+        figure_file = figure.getAttribute("xlink:href")
+        figure_shortcut = figure_file.split("_")[1][:2]
+        figure_shortcut = figure_shortcut[0] if figure_shortcut[1] == "d" else figure_shortcut[0].upper()
+        m = figure.getAttribute("transform")
+        m = m.split("(")[1].split(")")[0].split()
+        x = int(figure.getAttribute("x")) + int(m[4])
+        y = int(figure.getAttribute("y")) + int(m[5])
+        column = int(x / 100)
+        row = int(y / 100)
+        if column < 8 and row < 8:
+            chessboard.chessboard[row][column] = figure_shortcut
+    chessboard.set_position_to_packed()
+    browser.window.open("http://vysoky.pythonanywhere.com/chessboard/" + chessboard.position, "_self")
+    return chessboard.position
 
 def chessboard_hide_show(event):
     try:
@@ -153,7 +174,8 @@ def zoom_in(event):
 
 
 
-document["but-fig-count"].bind("click", count)
+document["but-go-to-position"].bind("click", go_to_position)
+document["but-fig-count"].bind("click", figures_counting)
 document["but-chessboard-hide-show"].bind("click", chessboard_hide_show)
 document["but-console-hide-show"].bind("click", console_hide_show)
 document["but-zoom-out"].bind("click", zoom_out)

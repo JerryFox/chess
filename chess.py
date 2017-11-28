@@ -101,6 +101,7 @@ def html_source_text(insert_html):
             <button id="but-chessboard-hide-show">chess_hide/show</button>
             <button id="but-console-hide-show">console_hi/sh</button>
             <button id="but-fig-count">count fig.</button>
+            <button id="but-go-to-position">go to position</button>
             <button id="but-zoom-out">◀</button>
             <span id="zoom-display"></span>
             <button id="but-zoom-in">▶</button>
