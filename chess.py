@@ -46,8 +46,8 @@ def beside_figures_images():
     return images
 
 def svg_source_text(chessboard):
-    source = """<svg id="chessboard" class="chessboard" viewBox="0 0 1105 810"
-    version="1.1" width="100%" xmlns="http://www.w3.org/2000/svg"
+    source = """<svg id="chessboard" class="chessboard" viewBox="0 0 1007 810"
+    version="1.1" width="60%" xmlns="http://www.w3.org/2000/svg"
     style="overflow: hidden; position: relative;">
 		<style>
 		    .draggable {{
@@ -63,6 +63,12 @@ chessboard position string:
     xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_01.svg"
     style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
 </image>
+<g class="cursors">
+    <rect id="selector" fill="none" stroke="darkred" stroke-width="6" x="-200" y="-200" width="94" height="94"
+        transform="matrix(1 0 0 1 8 8)"/>
+    <rect id="cursor" fill="none" stroke="lightgrey" stroke-width="5" x="0" y="0" width="100" height="100"
+        transform="matrix(1 0 0 1 5 5)"/>
+</g>
 <g class="figures">
 {images}
 {beside_figures}
@@ -106,12 +112,15 @@ def html_source_text(insert_html):
             <span id="zoom-display"></span>
             <button id="but-zoom-in">▶</button>
             <span id="coordinates"></span>
+            <span id="chessboard-coordinates"></span>
 
 
             <div id="chess-container">
 {insert_html}
             </div>
 
+        </div>
+        <div>
         </div>
         <div id="console" class="console">
             <!-- Brython console -->

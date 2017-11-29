@@ -1,9 +1,49 @@
-from browser import document, alert
+from browser import document, alert, window
 from chess import Chessboard
 
 
+def click_on_chessboard(evt):
+    x = document["cursor"].getAttribute("x")
+    y = document["cursor"].getAttribute("y")
+    if evt.shiftKey:
+        targets = document.get(selector="rect.targets")
+        remove = False
+        for t in targets:
+            if t.getAttribute("x") == x and t.getAttribute("y") == y:
+                t.remove()
+                remove = True
+                break
+        if not remove:
+            # add new target
+            #<rect class="targets" fill="none" stroke="#00ff00" stroke-width="2" x="200" y="200" width="92" height="92"
+            #    transform="matrix(1 0 0 1 9 9)"/>
+            cursor = document["cursor"]
+            clone = cursor.cloneNode()
+            clone.removeAttribute("id")
+            clone.setAttribute("class", "targets")
+            clone.setAttribute("stroke", "darkgreen")
+            clone.setAttribute("stroke-width", "4")
+            clone.setAttribute("x", x)
+            clone.setAttribute("y", y)
+            clone.setAttribute("width", "90")
+            clone.setAttribute("height", "90")
+            clone.setAttribute("transform", "matrix(1 0 0 1 10 10)")
+            cursor.insertAdjacentElement('beforebegin', clone)
+    else:
+        document["selector"].setAttribute("x", x)
+        document["selector"].setAttribute("y", y)
+
 def move_over_chessboard(evt):
     document["coordinates"].text = "x:{} y:{}".format(evt.x, evt.y)
+    bound_rect = document["chessboard"].getBoundingClientRect()
+    zoom_chessboard = 1007 / bound_rect.width
+    x0 = bound_rect.x + window.scrollX
+    y0 = bound_rect.y + window.scrollY
+    row = min(int((evt.y - 5 - y0) * zoom_chessboard / 100), 7)
+    col = min(int((evt.x - 5 - x0) * zoom_chessboard / 100), 9)
+    document["chessboard-coordinates"].text = "row:{} col:{}".format(row, col)
+    document["cursor"].setAttribute("x", str(col * 100))
+    document["cursor"].setAttribute("y", str(row * 100))
 
 def select_element(evt):
     selected_element = evt.target
@@ -11,7 +51,7 @@ def select_element(evt):
     if me:
         me.removeAttribute("id")
     selected_element.setAttribute("id", "moving")
-    zoom_chessboard = 100 * (document["chessboard"].getBoundingClientRect().width / 1065)
+    zoom_chessboard = 100 * (document["chessboard"].getBoundingClientRect().width / 1007)
     #if "%" in chessboard_width:
     #    zoom_chessboard = float(chessboard_width.split("%")[0])
     # current matrix
@@ -188,4 +228,6 @@ figures = document.get(selector=".chess-figure")
 for f in figures:
     f.bind("mousedown", select_element)
 document.get(selector="body")[0].bind("mousemove", move_over_chessboard)
+document["chessboard"].bind("mousedown", click_on_chessboard)
+
 
