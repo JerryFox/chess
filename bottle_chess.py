@@ -19,11 +19,18 @@ PATH_PREFIX = "/files"          # path prefix in browser
 def kudy_z_nudy():
     return "<h1>nothing here but love...</h1>"
 
-# static file chess.py (due to import import chess)
-@route('/chessboard/chess.py')
+
+# static file chess.py from chessboard/... (due to import import chess)
+@route('/chessboard/<name:re:.*chess\.py>')
+def sen_static_chess1(name):
+    return static_file("chess.py", root='/home/vysoky/projects/chess/static/scripts')
+
+
+# static file chess.py from root (due to import import chess)
 @route('/chess.py')
 def send_static_chess():
     return static_file("chess.py", root='/home/vysoky/projects/chess/static/scripts')
+
 
 # static files
 @route('/static/<filename:path>')
