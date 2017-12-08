@@ -13,6 +13,25 @@ chessboard[1] = list("P" * 8)
 chessboard[6] = list("p" * 8)
 chessboard[7] = list("rnbkqbnr")
 
+def packed_to_unpacked_position(position="base"):
+    if position == "base":
+        position = "RNBKQBNR" + "P" * 8 + "-" * 32 + "p" * 8 + "rnbkqbnr"
+    elif position == "blank":
+        position = ""
+    number_of_blanks = 0
+    unpacked_position = ""
+    for character in position:
+        if character.isdigit():
+            number_of_blanks = number_of_blanks * 10 + int(character)
+            #print(number_of_blanks)
+        else:
+            unpacked_position += "-" * number_of_blanks
+            number_of_blanks = 0
+            unpacked_position += character if character in FIGURES else "-"
+    # justify to 64 characters
+    unpacked_position = (unpacked_position + "-" * 64)[:64]
+    return unpacked_position
+
 def get_img_name(shortcut):
     """shortcuts:
     RNBKQBNRP - dark figures (d)
@@ -30,12 +49,14 @@ def img_source_text(row, column, shortcut):
     width="80" height="80"
     class="chess-figure draggable"
     transform="matrix(1 0 0 1 0 0)"
+    onmousedown="if (event.preventDefault) event.preventDefault()"
     >
     </image>"""
     return text.format(15 + column * 100, 13 + row * 100,
                        CHESS_IMG_FOLDER + get_img_name(shortcut))
 
 def beside_figures_images():
+    # images beside chessboard (for adding on chessboard)
     add_board = [["K", "Q"], ["R", "B"], ["N", "P"], ["", ""], ["", ""],
                  ["k", "q"], ["r", "b"], ["n", "p"]]
     images = ""
@@ -59,7 +80,7 @@ chessboard position string:
 {position}
 {packed_position}
 -->
-<image x="0" y="0" preserveAspectRatio="xMinYMin" \
+<image x="0" y="0" width="810" height="810" preserveAspectRatio="xMinYMin" \
     xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_01.svg"
     style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
 </image>
@@ -145,32 +166,11 @@ class Chessboard:
         self.chessboard = self.get_chessboard()
 
     def get_chessboard(self):
-        position = self.position
-        if position == "base":
-            position = "RNBKQBNR" + "P" * 8 + "-" * 32 + "p" * 8 + "rnbkqbnr"
-        elif position == "blank":
-            position = "-" * 64
-        elif any(character.isdigit() for character in position):
-            unpacked_position = ""
-            number_in_string = 0
-            for character in position:
-                if not character.isdigit():
-                    unpacked_position += "-" * number_in_string
-                    number_in_string = 0
-                    unpacked_position += character
-                else:
-                    number_in_string = number_in_string * 10 + int(character)
-            position = unpacked_position
-        position = position + "-" * (64 - len(position))
-        chessboard = [["" for column in range(8)] for r in range(8)]
-        index = 0
-        for row in range(len(chessboard)):
-            for column in range(len(chessboard[row])):
-                cell = position[index]
-                cell = "" if (cell[0] in "-_ ") else cell[0]    # free cell
-                chessboard[row][column] = cell                  # figure in cell
-                index += 1
+        position = packed_to_unpacked_position(self.position)
+        chessboard = [["" if c == "-" else c
+                       for c in position[i * 8 : i * 8 + 8]] for i in range(8)]
         return chessboard
+
 
     def get_html(self):
         return html_source_text(svg_source_text(self.chessboard))
