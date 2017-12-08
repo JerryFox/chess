@@ -33,7 +33,8 @@ def packed_to_unpacked_position(position="base"):
     return unpacked_position
 
 def get_img_name(shortcut):
-    """shortcuts:
+    """file name of figure shortcut's image
+    shortcuts:
     RNBKQBNRP - dark figures (d)
     rnbkqbnrp - light figures (l)
     image name format example:
@@ -43,16 +44,15 @@ def get_img_name(shortcut):
                                       "l" if shortcut.isupper() else "d")
     return name
 
-def img_source_text(row, column, shortcut):
-    text = """<image x="{}" y="{}" preserveAspectRatio="xMinYMin" xmlns:xlink="http://www.w3.org/1999/xlink"
-    xlink:href="{}" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); "
-    width="80" height="80"
-    class="chess-figure draggable"
-    transform="matrix(1 0 0 1 0 0)"
-    onmousedown="if (event.preventDefault) event.preventDefault()"
-    >
-    </image>"""
-    return text.format(15 + column * 100, 13 + row * 100,
+def image_element_code(row, column, shortcut):
+    image_template = """<image x="{}" y="{}" preserveAspectRatio="xMinYMin" xmlns:xlink="http://www.w3.org/1999/xlink"
+xlink:href="{}" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); "
+width="80" height="80"
+class="chess-figure draggable"
+transform="matrix(1 0 0 1 0 0)"
+onmousedown="if (event.preventDefault) event.preventDefault()"
+></image>"""
+    return image_template.format(15 + column * 100, 13 + row * 100,
                        CHESS_IMG_FOLDER + get_img_name(shortcut))
 
 def beside_figures_images():
@@ -63,18 +63,18 @@ def beside_figures_images():
     for row in range(len(add_board)):
         for column in range(len(add_board[0])):
             if add_board[row][column]:
-                images += img_source_text(row, column + 8, add_board[row][column]) + "\n"
+                images += image_element_code(row, column + 8, add_board[row][column]) + "\n"
     return images
 
-def svg_source_text(chessboard):
-    source = """<svg id="chessboard" class="chessboard" viewBox="0 0 1007 810"
-    version="1.1" width="60%" xmlns="http://www.w3.org/2000/svg"
-    style="overflow: hidden; position: relative;">
-		<style>
-		    .draggable {{
-                cursor: move;
-		    }}
-		</style>
+def svg_element_code(chessboard):
+    svg_template = """<svg id="chessboard" class="chessboard" viewBox="0 0 1007 810"
+version="1.1" width="60%" xmlns="http://www.w3.org/2000/svg"
+style="overflow: hidden; position: relative;">
+<style>
+    .draggable {{
+        cursor: move;
+    }}
+</style>
 <!--
 chessboard position string:
 {position}
@@ -101,17 +101,17 @@ chessboard position string:
     for row in range(len(chessboard)):
         for column in range(len(chessboard[0])):
             if chessboard[row][column]:
-                images += img_source_text(row, column, chessboard[row][column]) + "\n"
+                images += image_element_code(row, column, chessboard[row][column]) + "\n"
                 position += chessboard[row][column]
             else:
                 position += "-"
     ch = Chessboard(position)
     pp = ch.get_packed_position()
     beside_figures = beside_figures_images()
-    return source.format(position=position, packed_position=pp,
+    return svg_template.format(position=position, packed_position=pp,
             img_folder=CHESS_IMG_FOLDER, images=images, beside_figures=beside_figures)
 
-def html_source_text(insert_html):
+def html_source_code(insert_html):
     html_template = """<!DOCTYPE html>
 <html>
 	<head>
@@ -173,7 +173,7 @@ class Chessboard:
 
 
     def get_html(self):
-        return html_source_text(svg_source_text(self.chessboard))
+        return html_source_code(svg_element_code(self.chessboard))
 
     def get_packed_position(self):
         chessboard = self.chessboard
@@ -246,6 +246,6 @@ class Chessboard:
 
 if __name__ == "__main__":
     f = open("chessboard.htm", "w")
-    to_write = html_source_text(svg_source_text(chessboard))
+    to_write = html_source_code(svg_element_code(chessboard))
     f.write(to_write)
     f.close()
