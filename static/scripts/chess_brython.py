@@ -1,6 +1,7 @@
 from browser import document, alert, window
 from chess import Chessboard
 
+document.ch_selected_element = None
 
 def click_on_chessboard(evt):
     x = document["cursor"].getAttribute("x")
@@ -37,6 +38,7 @@ def move_over_chessboard(evt):
     document["coordinates"].text = "x:{} y:{}".format(evt.x, evt.y)
     bound_rect = document["chessboard"].getBoundingClientRect()
     zoom_chessboard = 1007 / bound_rect.width
+    document.ch_zoom_chessboard = zoom_chessboard
     x0 = bound_rect.x + window.scrollX
     y0 = bound_rect.y + window.scrollY
     row = min(int((evt.y - 5 - y0) * zoom_chessboard / 100), 7)
@@ -44,19 +46,28 @@ def move_over_chessboard(evt):
     document["chessboard-coordinates"].text = "row:{} col:{}".format(row, col)
     document["cursor"].setAttribute("x", str(col * 100))
     document["cursor"].setAttribute("y", str(row * 100))
+    # move selected figure
+    sel_figure = document.ch_selected_element
+    if sel_figure:
+        dx = (evt.clientX - document.ch_current_x) * document.ch_zoom_chessboard
+        dy = (evt.clientY - document.ch_current_y) * document.ch_zoom_chessboard
+        cm = list(document.ch_current_matrix)
+        cm[4] += dx
+        cm[5] += dy
+        m = [str(i) for i in cm]
+        #alert(str(m))
+        sel_figure.setAttribute("transform", "matrix ({})".format(" ".join(m)))
 
 def select_element(evt):
+    evt.preventDefault()
     selected_element = evt.target
     me = document.getElementById("moving")
     if me:
         me.removeAttribute("id")
     selected_element.setAttribute("id", "moving")
-    zoom_chessboard = 100 * (document["chessboard"].getBoundingClientRect().width / 1007)
-    #if "%" in chessboard_width:
-    #    zoom_chessboard = float(chessboard_width.split("%")[0])
     # current matrix
     cm = selected_element.getAttribute("transform").split("(")[1].split(")")[0].split()
-    cm = [int(i) for i in cm]
+    cm = [float(i) for i in cm]
     # clone figure outside chessboard
     x = int(selected_element.getAttribute("x"))
     x += cm[4]
@@ -71,16 +82,18 @@ def select_element(evt):
     document.ch_current_y = evt.clientY
     document.ch_selected_element = selected_element
     document.ch_current_matrix = cm
-    document.ch_zoom_chessboard = zoom_chessboard
+    # document.ch_zoom_chessboard = zoom_chessboard
     # events binding
-    selected_element.bind("mousemove", move_element)
-    selected_element.bind("mouseout", deselect_element);
+    # selected_element.bind("mousemove", move_element)
+    # selected_element.bind("mouseout", deselect_element);
     selected_element.bind("mouseup", deselect_element)
 
 def deselect_element(evt):
     if document.ch_selected_element:
         sel_elem = document.ch_selected_element
-        cm = document.ch_current_matrix
+        cm = sel_elem.getAttribute("transform").split("(")[1].split(")")[0].split()
+        cm = [int(float(i)) for i in cm]
+        #cm = document.ch_current_matrix
         cm[4] = 100 * (round(cm[4] / 100))
         cm[5] = 100 * (round(cm[5] / 100))
         m = [str(i) for i in cm]
@@ -89,33 +102,10 @@ def deselect_element(evt):
         sel_elem.unbind("mouseup")
         sel_elem.unbind("mouseout")
         document.ch_selected_element = None
-
         x = int(sel_elem.getAttribute("x"))
         x += cm[4]
         if x > 810:
             sel_elem.remove()
-
-def move_element(evt):
-    #alert("x:{} y:{} zoom:{} transform:{}".format(document.ch_current_x, document.ch_current_y, document.ch_zoom_chessboard,
-    #    document.ch_current_matrix))
-    dx = evt.clientX - document.ch_current_x
-    dy = evt.clientY - document.ch_current_y
-    cm = document.ch_current_matrix
-    if dx or dy:
-        dx1 = round(100 * dx / document.ch_zoom_chessboard)
-        dy1 = round(100 * dy / document.ch_zoom_chessboard)
-        if dx1 or dy1:
-            cm[4] += dx1
-            cm[5] += dy1
-            m = [str(i) for i in cm]
-            #alert(str(m))
-            document.ch_current_matrix = cm
-            document.ch_selected_element.setAttribute("transform", "matrix ({})".format(" ".join(m)))
-    document.ch_current_x = evt.clientX
-    document.ch_current_y = evt.clientY
-
-
-
 
 
 
@@ -227,7 +217,8 @@ document["zoom-display"].text = width
 figures = document.get(selector=".chess-figure")
 for f in figures:
     f.bind("mousedown", select_element)
-document.get(selector="body")[0].bind("mousemove", move_over_chessboard)
+#document.get(selector="body")[0].bind("mousemove", move_over_chessboard)
+document["chessboard"].bind("mousemove", move_over_chessboard)
 document["chessboard"].bind("mousedown", click_on_chessboard)
 
 
