@@ -39,8 +39,8 @@ def move_over_chessboard(evt):
     bound_rect = document["chessboard"].getBoundingClientRect()
     zoom_chessboard = 1007 / bound_rect.width
     document.ch_zoom_chessboard = zoom_chessboard
-    x0 = bound_rect.x + window.scrollX
-    y0 = bound_rect.y + window.scrollY
+    x0 = bound_rect.left + window.scrollX
+    y0 = bound_rect.top + window.scrollY
     row = min(int((evt.y - 5 - y0) * zoom_chessboard / 100), 7)
     col = min(int((evt.x - 5 - x0) * zoom_chessboard / 100), 9)
     document["chessboard-coordinates"].text = "row:{} col:{}".format(row, col)
@@ -147,8 +147,8 @@ def go_to_position(event):
         figure_shortcut = figure_shortcut[0] if figure_shortcut[1] == "d" else figure_shortcut[0].upper()
         m = figure.getAttribute("transform")
         m = m.split("(")[1].split(")")[0].split()
-        x = int(figure.getAttribute("x")) + int(m[4])
-        y = int(figure.getAttribute("y")) + int(m[5])
+        x = int(figure.getAttribute("x")) + float(m[4])
+        y = int(figure.getAttribute("y")) + float(m[5])
         column = int(x / 100)
         row = int(y / 100)
         if column < 8 and row < 8:

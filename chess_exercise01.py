@@ -108,3 +108,20 @@ class Chessboard:
 
     def get_html(self):
         return html_source_code(svg_element_code(self.chessboard))
+
+    def get_position(self):
+        return "".join([row[col] for row in self.chessboard for col in range(8)]).replace(" ", "-")
+
+    def get_packed_position(self):
+        return unpacked_to_packed_position(self.get_position())
+
+    def set_position(self, position=None):
+        if position is None:
+            self.position = self.get_position()
+        else:
+            self.position = position
+            self.chessboard = self.get_chessboard()
+
+    def set_position_to_packed(self):
+        self.position = self.get_packed_position()
+
