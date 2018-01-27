@@ -152,6 +152,10 @@ def html_source_code(insert_html):
         </div>
         <div id="output">
         </div>
+        <script type="text/python3">
+            from browser import window
+            window.scrollTo(0, 0)
+        </script>
 
 	</body>
 </html>
