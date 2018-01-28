@@ -3,8 +3,9 @@
 
 # chess exercise application for seminar
 
-from bottle import default_app, route, static_file
+from bottle import default_app, route, static_file, request
 import os, os.path
+#import chess_exercise01 as chess
 import chess
 
 chess.CHESS_IMG_FOLDER = "/static/images/"
@@ -39,22 +40,34 @@ def send_static(filename):
 
 @route("/chessboard/<position>/reset/<positions>")
 def chessboard_reset_fields(position="base", positions=""):
+    if request.get_cookie("chess_zoom"):
+        zoom = request.get_cookie("chess_zoom")
+    else:
+        zoom = "60%"
     ch = chess.Chessboard(position)
     ch.remove_figures(positions)
-    return ch.get_html()
+    return ch.get_html(zoom=zoom)
 
 @route("/chessboard/<position>/set/<fig_positions>")
 def chessboard_set_fields(position="blank", fig_positions=""):
+    if request.get_cookie("chess_zoom"):
+        zoom = request.get_cookie("chess_zoom")
+    else:
+        zoom = "60%"
     ch = chess.Chessboard(position)
     ch.add_figures(fig_positions)
-    return ch.get_html()
+    return ch.get_html(zoom=zoom)
 
 @route("/chessboard")
 @route("/chessboard/")
 @route("/chessboard/<position>")
 def chessboard(position="base"):
+    if request.get_cookie("chess_zoom"):
+        zoom = request.get_cookie("chess_zoom")
+    else:
+        zoom = "60%"
     ch = chess.Chessboard(position)
-    return ch.get_html()
+    return ch.get_html(zoom=zoom)
 
 @route(PATH_PREFIX)
 @route(PATH_PREFIX + '<filepath:path>')

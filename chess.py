@@ -66,9 +66,10 @@ def beside_figures_images():
                 images += image_element_code(row, column + 8, add_board[row][column]) + "\n"
     return images
 
-def svg_element_code(chessboard):
+def svg_element_code(chessboard, zoom="60%"):
     svg_template = """<svg id="chessboard" class="chessboard" viewBox="0 0 1007 810"
-version="1.1" width="60%" xmlns="http://www.w3.org/2000/svg"
+version="1.1" width=\""""
+    svg_template += zoom + """\" xmlns="http://www.w3.org/2000/svg"
 style="overflow: hidden; position: relative;">
 <style>
     .draggable {{
@@ -176,8 +177,8 @@ class Chessboard:
         return chessboard
 
 
-    def get_html(self):
-        return html_source_code(svg_element_code(self.chessboard))
+    def get_html(self, zoom="60%"):
+        return html_source_code(svg_element_code(self.chessboard, zoom))
 
     def get_packed_position(self):
         chessboard = self.chessboard

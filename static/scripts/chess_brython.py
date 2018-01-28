@@ -1,5 +1,6 @@
 from browser import document, alert, window
 from chess import Chessboard
+from http import cookies
 
 document.ch_selected_element = None
 
@@ -165,8 +166,10 @@ def chessboard_hide_show(event):
     else:
         if "hidden" in c.getAttribute("class"):
             c.classList.remove("hidden")
+            document.cookie = "chess_board=visible; expires=" + cookies._getdate(60 * 60 * 24 * 365) + "; path=/;"
         else:
             c.classList.add("hidden")
+            document.cookie = "chess_board=hidden; expires=" + cookies._getdate(60 * 60 * 24 * 365) + "; path=/;"
 
 def console_hide_show(event):
     try:
@@ -176,8 +179,10 @@ def console_hide_show(event):
     else:
         if "hidden" in c.getAttribute("class"):
             c.classList.remove("hidden")
+            document.cookie = "chess_console=visible; expires=" + cookies._getdate(60 * 60 * 24 * 365) + "; path=/;"
         else:
             c.classList.add("hidden")
+            document.cookie = "chess_console=hidden; expires=" + cookies._getdate(60 * 60 * 24 * 365) + "; path=/;"
 
 def zoom_out(event):
     # chessboard svg zoom out
@@ -189,6 +194,7 @@ def zoom_out(event):
         zoom = str(zoom) + "%"
         svg.setAttribute("width", zoom)
         document["zoom-display"].text = zoom
+        document.cookie = "chess_zoom=" + zoom + "; expires=" + cookies._getdate(60 * 60 * 24 * 365) + "; path=/;"
 
 
 def zoom_in(event):
@@ -201,6 +207,7 @@ def zoom_in(event):
         zoom = str(zoom) + "%"
         svg.setAttribute("width", zoom)
         document["zoom-display"].text = zoom
+        document.cookie = "chess_zoom=" + zoom + "; expires=" + cookies._getdate(60 * 60 * 24 * 365) + "; path=/;"
 
 
 
@@ -220,5 +227,20 @@ for f in figures:
 #document.get(selector="body")[0].bind("mousemove", move_over_chessboard)
 document["chessboard"].bind("mousemove", move_over_chessboard)
 document["chessboard"].bind("mousedown", click_on_chessboard)
+
+c = document.cookie
+s = {j.split("=")[0]:j.split("=")[1] for j in c.split("; ")}
+if "chess_board" in s.keys() and s["chess_board"] == "hidden":
+    c = document.get(selector=".chessboard")[0]
+    c.classList.add("hidden")
+if "chess_console" in s.keys() and s["chess_console"] == "hidden":
+    try:
+        c = document["console"]
+    except:
+        pass
+    else:
+        c.classList.add("hidden")
+
+
 
 
