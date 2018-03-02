@@ -133,7 +133,11 @@ def figures_counting(event):
         if x < 810:
             on_board += 1
     chessboard.set_position_to_packed()
-    output += "<h3>position: {}</h3>".format(chessboard.position)
+    output += "<h3>position: {}</h3>\n".format(chessboard.position)
+    chboard = str(chessboard.chessboard)
+    chboard = chboard.replace("],", "],<br>\n")
+    chboard = "<p>" + chboard + "</p>\n"
+    output += chboard
     document["output"].html = output
     alert("figures count total: {} \n on board: {}".format(figures_count, on_board))
     #browser.window.open("http://vysoky.pythonanywhere.com/chessboard/" + chessboard.position, "_self")

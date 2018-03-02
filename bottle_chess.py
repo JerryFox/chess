@@ -12,7 +12,7 @@ chess.CHESS_IMG_FOLDER = "/static/images/"
 chess.SCRIPT_FOLDER = "/static/scripts/"
 chess.CSS_FOLDER = "/static/css/"
 
-ROOT = "/home/vysoky/seminar"   # where are files serving from
+ROOT = "/home/vysoky"   # where are files serving from
 PATH_PREFIX = "/files"          # path prefix in browser
 
 
