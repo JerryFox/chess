@@ -1,6 +1,8 @@
 from browser import document, alert, window
 from chess import Chessboard
 from http import cookies
+from moves import get_chessboard
+from select_deselect import select_element
 
 document.ch_selected_element = None
 
@@ -58,56 +60,6 @@ def move_over_chessboard(evt):
         m = [str(i) for i in cm]
         #alert(str(m))
         sel_figure.setAttribute("transform", "matrix ({})".format(" ".join(m)))
-
-def select_element(evt):
-    evt.preventDefault()
-    selected_element = evt.target
-    me = document.getElementById("moving")
-    if me:
-        me.removeAttribute("id")
-    selected_element.setAttribute("id", "moving")
-    # current matrix
-    cm = selected_element.getAttribute("transform").split("(")[1].split(")")[0].split()
-    cm = [float(i) for i in cm]
-    # clone figure outside chessboard
-    x = int(selected_element.getAttribute("x"))
-    x += cm[4]
-    if x > 810:
-        clone = selected_element.cloneNode()
-        selected_element.insertAdjacentElement('beforebegin', clone)
-        clone.bind("mousedown", select_element)
-    # move selected figure on top
-    document.querySelector('.figures').insertAdjacentElement('beforeend',selected_element)
-    # save variables to document
-    document.ch_current_x = evt.clientX
-    document.ch_current_y = evt.clientY
-    document.ch_selected_element = selected_element
-    document.ch_current_matrix = cm
-    # document.ch_zoom_chessboard = zoom_chessboard
-    # events binding
-    # selected_element.bind("mousemove", move_element)
-    # selected_element.bind("mouseout", deselect_element);
-    selected_element.bind("mouseup", deselect_element)
-
-def deselect_element(evt):
-    if document.ch_selected_element:
-        sel_elem = document.ch_selected_element
-        cm = sel_elem.getAttribute("transform").split("(")[1].split(")")[0].split()
-        cm = [int(float(i)) for i in cm]
-        #cm = document.ch_current_matrix
-        cm[4] = 100 * (round(cm[4] / 100))
-        cm[5] = 100 * (round(cm[5] / 100))
-        m = [str(i) for i in cm]
-        sel_elem.setAttribute("transform", "matrix ({})".format(" ".join(m)))
-        sel_elem.unbind("mousemove")
-        sel_elem.unbind("mouseup")
-        sel_elem.unbind("mouseout")
-        document.ch_selected_element = None
-        x = int(sel_elem.getAttribute("x"))
-        x += cm[4]
-        if x > 810:
-            sel_elem.remove()
-
 
 
 def figures_counting(event):
@@ -245,6 +197,7 @@ if "chess_console" in s.keys() and s["chess_console"] == "hidden":
     else:
         c.classList.add("hidden")
 
+document.chessboard = get_chessboard()
 
 
 

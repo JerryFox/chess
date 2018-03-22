@@ -44,16 +44,16 @@ def get_img_name(shortcut):
                                       "l" if shortcut.isupper() else "d")
     return name
 
-def image_element_code(row, column, shortcut):
+def image_element_code(row, column, shortcut, beside=False):
     image_template = """<image x="{}" y="{}" preserveAspectRatio="xMinYMin" xmlns:xlink="http://www.w3.org/1999/xlink"
 xlink:href="{}" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); "
 width="80" height="80"
-class="chess-figure draggable"
+class="chess-figure draggable{}"
 transform="matrix(1 0 0 1 0 0)"
 onmousedown="if (event.preventDefault) event.preventDefault()"
 ></image>"""
     return image_template.format(15 + column * 100, 13 + row * 100,
-                       CHESS_IMG_FOLDER + get_img_name(shortcut))
+                       CHESS_IMG_FOLDER + get_img_name(shortcut), " source" if beside else "")
 
 def beside_figures_images():
     # images beside chessboard (for adding on chessboard)
@@ -63,7 +63,7 @@ def beside_figures_images():
     for row in range(len(add_board)):
         for column in range(len(add_board[0])):
             if add_board[row][column]:
-                images += image_element_code(row, column + 8, add_board[row][column]) + "\n"
+                images += image_element_code(row, column + 8, add_board[row][column], True) + "\n"
     return images
 
 def svg_element_code(chessboard, zoom="60%"):
@@ -75,6 +75,17 @@ style="overflow: hidden; position: relative;">
     .draggable {{
         cursor: move;
     }}
+
+    #labels text {{
+        font-weight: bold;
+        fill: black;
+        stroke-width: 0;
+        font-size: 16px;
+        font-family: serif;
+        //text-anchor: middle;
+        //xml:space: preserve;
+        stroke: black;
+    }}
 </style>
 <!--
 chessboard position string:
@@ -85,6 +96,14 @@ chessboard position string:
     xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{img_folder}Chess_Board_01.svg"
     style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
 </image>
+<g id="labels" class="hidden">
+    <g id="label_0_0" transform="matrix(1 0 0 1 0 0)">
+        <text x="13" y="25">00</text>
+    </g>
+    <g id="label_0_1" transform="matrix(1 0 0 1 100 0)">
+        <text x="13" y="25">01</text>
+    </g>
+</g>
 <g class="cursors">
     <rect id="selector" fill="none" stroke="darkred" stroke-width="6" x="-200" y="-200" width="94" height="94"
         transform="matrix(1 0 0 1 8 8)"/>
@@ -126,10 +145,11 @@ def html_source_code(insert_html):
  	</head>
     <body onload="brython(1)">
         <div>
-            <button id="but-chessboard-hide-show">chess_hide/show</button>
+            <button id="but-chessboard-hide-show">chess_hi/sh</button>
             <button id="but-console-hide-show">console_hi/sh</button>
             <button id="but-fig-count">count fig.</button>
-            <button id="but-go-to-position">go to position</button>
+            <button id="but-go-to-position">goto pos.</button>
+            <button id="but-test">test</button>
             <button id="but-zoom-out">◀</button>
             <span id="zoom-display"></span>
             <button id="but-zoom-in">▶</button>
