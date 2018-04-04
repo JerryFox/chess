@@ -1,14 +1,13 @@
-from browser import document as doc
-from chess import Chessboard
 from select_deselect import select_element
-import copy
+from select_deselect import Board, ChessFigure
+from browser import document as doc
 
 
 def get_chessboard():
     figures_count = 0
     on_board = 0
-    chessboard = Chessboard("blank")
-    figures = copy.deepcopy(chessboard.chessboard)
+    chessboard = Board("blank")
+    #figures = [[[] for col in range(8)] for row in range(8)]
     beside_figures = {}
     output = ""
     for figure in doc.get(selector=".chess-figure"):
@@ -24,8 +23,8 @@ def get_chessboard():
         column = int(x / 100)
         row = int(y / 100)
         if column < 8 and row < 8:
-            chessboard.chessboard[row][column] = figure_shortcut
-            figures[row][column] = figure
+            figure_object = ChessFigure(figure_shortcut, figure, row, column)
+            figure_object.place_on_board(chessboard)
         elif row < 8 and column < 10:
             beside_figures[figure_shortcut] = figure
         output += "x:{} y:{} row: {} col: {}".format(x, y, row, column) + "<br>\n"
@@ -40,12 +39,12 @@ def get_chessboard():
     chessboard.output = output
     chessboard.figures_count = figures_count
     chessboard.on_board = on_board
-    chessboard.figure_file = figure_file
-    chessboard.figures = figures
+    # chessboard.figures = figures
     chessboard.beside_figures = beside_figures
     #doc["output"].html = output
     #alert("figures count total: {} \n on board: {}".format(figures_count, on_board))
     #browser.window.open("http://vysoky.pythonanywhere.com/chessboard/" + chessboard.position, "_self")
+    doc.ch_board = chessboard
     return chessboard
 
 def accept_moves():
@@ -67,34 +66,12 @@ def reset_moves():
         m[4] = "0"
         m[5] = "0"
         figure.setAttribute("transform", "matrix(" + " ".join(m) + ")")
-
-def remove_figures(chessboard=None):
-    if not chessboard:
-        chessboard = [["x" for col in range(8)] for row in range(8)]
-    ch = get_chessboard().figures
-    for row in range(len(chessboard)):
-        for col in range(len(chessboard[row])):
-            if chessboard[row][col] and ch[row][col]:
-                ch[row][col].remove()
-
-def remove_figure(row, col):
-    ch = get_chessboard().figures
-    figure = ch[row][col]
-    if figure:
-        figure.remove()
-
-def add_figure(figure="P", row=0, col=0):
-    source = get_chessboard().beside_figures
-    clone = source[figure].cloneNode()
-    x = col * 100 + int(clone.getAttribute("x")) % 100
-    y = row * 100 + int(clone.getAttribute("y")) % 100
-    clone.setAttribute("x", str(x))
-    clone.setAttribute("y", str(y))
-    source[figure].insertAdjacentElement('beforebegin', clone)
-    clone.bind("mousedown", select_element)
+        get_chessboard()
 
 def add_figures(chessboard):
-    source = get_chessboard().beside_figures
+    if not doc.ch_board:
+        get_chessboard()
+    source = doc.ch_board.beside_figures
     for row in range(len(chessboard)):
         for col in range(len(chessboard[row])):
             if chessboard[row][col].strip():
@@ -107,10 +84,6 @@ def add_figures(chessboard):
                 clone.setAttribute("y", str(y))
                 figure.insertAdjacentElement('beforebegin', clone)
                 clone.bind("mousedown", select_element)
+                doc.querySelector('.figures').insertAdjacentElement('beforeend',clone)
+                doc.ch_board.figures[row][col].append(clone)
 
-def move_figure(figure, row, col):
-        m = figure.getAttribute("transform")
-        m = m.split("(")[1].split(")")[0].split()
-        m[4] = str(int(m[4]) + 100 * col)
-        m[5] = str(int(m[5]) + 100 * row)
-        figure.setAttribute("transform", "matrix(" + " ".join(m) + ")")

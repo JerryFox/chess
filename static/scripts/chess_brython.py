@@ -49,6 +49,7 @@ def move_over_chessboard(evt):
     document["chessboard-coordinates"].text = "row:{} col:{}".format(row, col)
     document["cursor"].setAttribute("x", str(col * 100))
     document["cursor"].setAttribute("y", str(row * 100))
+    document.coord = [row, col]
     # move selected figure
     sel_figure = document.ch_selected_element
     if sel_figure:
@@ -165,6 +166,9 @@ def zoom_in(event):
         document["zoom-display"].text = zoom
         document.cookie = "chess_zoom=" + zoom + "; expires=" + cookies._getdate(60 * 60 * 24 * 365) + "; path=/;"
 
+def import_module(evt=None):
+    module = __import__(document["import-module"].value)
+
 
 
 document["but-go-to-position"].bind("click", go_to_position)
@@ -173,6 +177,7 @@ document["but-chessboard-hide-show"].bind("click", chessboard_hide_show)
 document["but-console-hide-show"].bind("click", console_hide_show)
 document["but-zoom-out"].bind("click", zoom_out)
 document["but-zoom-in"].bind("click", zoom_in)
+document["but-test"].bind("click", import_module)
 
 width = document.get(selector="svg.chessboard")[0].getAttribute("width")
 document["zoom-display"].text = width
@@ -197,7 +202,5 @@ if "chess_console" in s.keys() and s["chess_console"] == "hidden":
     else:
         c.classList.add("hidden")
 
-document.chessboard = get_chessboard()
-
-
+document.ch_board = get_chessboard()
 

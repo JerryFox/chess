@@ -150,6 +150,7 @@ def html_source_code(insert_html):
             <button id="but-fig-count">count fig.</button>
             <button id="but-go-to-position">goto pos.</button>
             <button id="but-test">test</button>
+            <input id="import-module" type="text" name="import-module" value="walk" size="10"><br>
             <button id="but-zoom-out">◀</button>
             <span id="zoom-display"></span>
             <button id="but-zoom-in">▶</button>
