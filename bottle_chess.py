@@ -45,7 +45,6 @@ def pokus(name=""):
         abort(404, "python file not found")
 
 
-
 # static files
 @route('/static/<filename:path>')
 def send_static(filename):
@@ -56,7 +55,7 @@ def chessboard_reset_fields(position="base", positions=""):
     if request.get_cookie("chess_zoom"):
         zoom = request.get_cookie("chess_zoom")
     else:
-        zoom = "60%"
+        zoom = "600px"
     ch = chess.Chessboard(position)
     ch.remove_figures(positions)
     return ch.get_html(zoom=zoom)
@@ -66,7 +65,7 @@ def chessboard_set_fields(position="blank", fig_positions=""):
     if request.get_cookie("chess_zoom"):
         zoom = request.get_cookie("chess_zoom")
     else:
-        zoom = "60%"
+        zoom = "600px"
     ch = chess.Chessboard(position)
     ch.add_figures(fig_positions)
     return ch.get_html(zoom=zoom)
@@ -78,7 +77,7 @@ def chessboard(position="base"):
     if request.get_cookie("chess_zoom"):
         zoom = request.get_cookie("chess_zoom")
     else:
-        zoom = "60%"
+        zoom = "600px"
     ch = chess.Chessboard(position)
     return ch.get_html(zoom=zoom)
 

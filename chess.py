@@ -66,7 +66,7 @@ def beside_figures_images():
                 images += image_element_code(row, column + 8, add_board[row][column], True) + "\n"
     return images
 
-def svg_element_code(chessboard, zoom="60%"):
+def svg_element_code(chessboard, zoom="600px"):
     svg_template = """<svg id="chessboard" class="chessboard" viewBox="0 0 1007 810"
 version="1.1" width=\""""
     svg_template += zoom + """\" xmlns="http://www.w3.org/2000/svg"
@@ -144,35 +144,36 @@ def html_source_code(insert_html):
         <script type="text/python3" src="{script_folder}chess_brython.py"></script>
  	</head>
     <body onload="brython(1)">
-        <div>
-            <button id="but-chessboard-hide-show">chess_hi/sh</button>
-            <button id="but-console-hide-show">console_hi/sh</button>
-            <button id="but-fig-count">count fig.</button>
-            <button id="but-go-to-position">goto pos.</button>
-            <button id="but-test">test</button>
-            <input id="import-module" type="text" name="import-module" value="walk" size="10"><br>
-            <button id="but-zoom-out">◀</button>
-            <span id="zoom-display"></span>
-            <button id="but-zoom-in">▶</button>
-            <span id="coordinates"></span>
-            <span id="chessboard-coordinates"></span>
+        <div id="chess-outer-container" class="wrapper">
+            <div class="gr-header">
+                <button id="but-chessboard-hide-show">chess_hi/sh</button>
+                <button id="but-console-hide-show">console_hi/sh</button>
+                <button id="but-fig-count">count fig.</button>
+                <button id="but-go-to-position">goto pos.</button>
+                <button id="but-test">test</button>
+                <input id="import-module" type="text" name="import-module" value="walk" size="10"><br>
+                <button id="but-zoom-out">◀</button>
+                <span id="zoom-display"></span>
+                <button id="but-zoom-in">▶</button>
+                <span id="coordinates"></span>
+                <span id="chessboard-coordinates"></span>
+            </div>
 
 
-            <div id="chess-container">
+            <div id="chess-container" class="gr-chessboard">
 {insert_html}
             </div>
 
-        </div>
-        <div>
-        </div>
-        <div id="console" class="console">
-            <!-- Brython console -->
-            <textarea id=code class=codearea rows=20></textarea>
-            <div id=content></div>
-            <script type="text/python3" src="{script_folder}console.py" id="__main__"></script>
-            <!-- /Brython console -->
-        </div>
-        <div id="output">
+            <div id="console" class="console gr-console">
+                <!-- Brython console -->
+                <textarea id=code class=codearea rows=20></textarea>
+                <div id=content></div>
+                <script type="text/python3" src="{script_folder}console.py" id="__main__"></script>
+                <!-- /Brython console -->
+            </div>
+
+            <div id="output" class="gr-output">
+            </div>
         </div>
         <script type="text/python3">
             from browser import window
@@ -198,7 +199,9 @@ class Chessboard:
         return chessboard
 
 
-    def get_html(self, zoom="60%"):
+    def get_html(self, zoom="600px"):
+        if "px" not in zoom:
+            zoom="600px"
         return html_source_code(svg_element_code(self.chessboard, zoom))
 
     def get_packed_position(self):

@@ -110,9 +110,10 @@ code.file{
     font-size:18px;
     overflow:auto
 }
+
 textarea {
-    height: 300px;
-    width: 98%;
+    height: 400px;
+    width: 100%;
 }
 
 
@@ -120,3 +121,43 @@ textarea {
 .hidden {
     display: none;
 }
+
+
+.gr-header {
+    grid-area: header;
+}
+
+.gr-chessboard {
+    grid-area: chessboard;
+}
+
+.gr-console {
+    grid-area: console;
+}
+
+.gr-output {
+    grid-area: output;
+}
+
+.wrapper {
+    display: grid;
+    grid-gap: 5px;
+    grid-template-areas:
+     "header"
+     "chessboard"
+     "console"
+     "output"
+}
+
+@media only screen and (min-width: 1000px)   {
+    .wrapper {
+        display: grid;
+        grid-gap: 5px;
+        grid-template-columns: auto minmax(500px, 1fr);
+        grid-template-areas:
+         "header header"
+         "chessboard console"
+         "output output"
+    }
+}
+

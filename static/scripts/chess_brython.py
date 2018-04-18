@@ -145,10 +145,10 @@ def zoom_out(event):
     # chessboard svg zoom out
     svg = document.get(selector="svg.chessboard")[0]
     width = svg.getAttribute("width")
-    if "%" in width:
-        zoom = int(width.split("%")[0])
-        zoom = int((int(zoom/5) - 1) * 5)
-        zoom = str(zoom) + "%"
+    if "px" in width:
+        zoom = int(width.split("px")[0])
+        zoom = int((int(zoom/50) - 1) * 50)
+        zoom = str(zoom) + "px"
         svg.setAttribute("width", zoom)
         document["zoom-display"].text = zoom
         document.cookie = "chess_zoom=" + zoom + "; expires=" + cookies._getdate(60 * 60 * 24 * 365) + "; path=/;"
@@ -158,10 +158,10 @@ def zoom_in(event):
     # chessboard svg zoom in
     svg = document.get(selector="svg.chessboard")[0]
     width = svg.getAttribute("width")
-    if "%" in width:
-        zoom = int(width.split("%")[0])
-        zoom = int((int(zoom/5) + 1) * 5)
-        zoom = str(zoom) + "%"
+    if "px" in width:
+        zoom = int(width.split("px")[0])
+        zoom = int((int(zoom/50) + 1) * 50)
+        zoom = str(zoom) + "px"
         svg.setAttribute("width", zoom)
         document["zoom-display"].text = zoom
         document.cookie = "chess_zoom=" + zoom + "; expires=" + cookies._getdate(60 * 60 * 24 * 365) + "; path=/;"
@@ -190,7 +190,11 @@ document["chessboard"].bind("mousemove", move_over_chessboard)
 document["chessboard"].bind("mousedown", click_on_chessboard)
 
 c = document.cookie
-s = {j.split("=")[0]:j.split("=")[1] for j in c.split("; ")}
+if c:
+    s = {j.split("=")[0]:j.split("=")[1] for j in c.split("; ")}
+else:
+    s = {}
+
 if "chess_board" in s.keys() and s["chess_board"] == "hidden":
     c = document.get(selector=".chessboard")[0]
     c.classList.add("hidden")
