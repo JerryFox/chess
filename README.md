@@ -22,3 +22,14 @@ Při přidávání a ubírání figur je také možno používat souřadnice v n
 - http://vysoky.pythonanywhere.com/chessboard/blank/set/ra1Ra8
 
 (A jak tak koukám, tak to asi funguje blbě...)
+
+## Jak to spustit na lokále
+
+- naklonovat tento repositář
+- upravit config.py 
+- v adresáři projektu spustit Python (3)
+- import bottle_chess
+- from bottle import run
+- run(host='localhost', port=8080, debug=True)
+- v browseru http://localhost:8080/chessboard
+
