@@ -25,6 +25,7 @@ Při přidávání a ubírání figur je také možno používat souřadnice v n
 
 ## Jak to spustit na lokále
 
+- požadavky: python 3, Bottle framework - https://bottlepy.org/docs/dev/
 - naklonovat tento repositář
 - upravit config.py 
 - v adresáři projektu spustit Python (3)
