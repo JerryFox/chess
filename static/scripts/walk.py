@@ -1,5 +1,5 @@
 from browser import timer, document as doc
-import random
+from random import choice, randint
 from labels import remove_labels, show_labels, add_label
 
 CIRCLE_KNIGHT_WALK = [
@@ -63,7 +63,7 @@ def run():
     f.go()
 
 def knight_walk0(self, valid_moves):
-    move = random.choice(valid_moves)
+    move = choice(valid_moves)
     # remove other figure
     if self.chessboard.figures[move[0]][move[1]]:
         self.chessboard.remove_figure(move[0], move[1])
@@ -100,7 +100,7 @@ def test():
 def add_fig():
     fig = "p"
     doc.ch_time = 2000
-    where = random.randint(0, 63)
+    where = randint(0, 63)
     doc.ch_board.add_figure(fig, where // 8, where % 8)
     doc.ch_idtimer = timer.set_timeout(add_fig, doc.ch_time)
 

@@ -1,0 +1,12 @@
+.editorarea {
+    width: 100%;
+    position: relative;
+    margin: 0;
+}
+
+#editor {
+    float:none;
+    height:100%;
+    font-size:14pt;
+}
+

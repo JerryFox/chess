@@ -141,6 +141,40 @@ def html_source_code(insert_html):
         <script src="{script_folder}brython.js"></script>
         <script src="{script_folder}brython_stdlib.js"></script>
 
+        <!--Brython - editor - HEAD -->
+        <link rel="stylesheet" type="text/css"
+              href="https://fonts.googleapis.com/css?family=Roboto">
+        <link rel="stylesheet" href="{css_folder}editor.css">
+
+        <script src="{script_folder}ace/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="{script_folder}ace/ext-language_tools.js" type="text/javascript" charset="uteditorf-8"></script>
+        <script src="{script_folder}ace/mode-python3.js" type="text/javascript" charset="utf-8"></script>
+        <script src="{script_folder}ace/snippets/python.js" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/python3" id="tests_editor">
+from browser import document as doc
+import editor
+
+def editor_hide_show(event):
+    try:
+        c = doc["container"]
+    except:
+        pass
+    else:
+        if "hidden" in c.getAttribute("class"):
+            c.classList.remove("hidden")
+        else:
+            c.classList.add("hidden")
+
+# bindings
+doc['run'].bind('click',editor.run)
+#doc["editor-button"].bind("click", editor_hide_show)
+#doc["console-clr-button"].bind("click", console_clr)
+
+</script>
+
+        <!--/Brython - editor - HEAD -->
+
         <script type="text/python3" src="{script_folder}chess_brython.py"></script>
  	</head>
     <body onload="brython(1)">
@@ -175,6 +209,25 @@ def html_source_code(insert_html):
             <div id="output" class="gr-output">
             </div>
         </div>
+
+    	    <div id="container" class="editorarea gr-editor">
+    	        <div id="editor-buttons">
+        			<button id="run">&nbsp;▶ Run (Save)&nbsp;</button>
+        			<button id="save-to">&nbsp;SaveTo&nbsp;</button>
+                    <input id="storage-name" list="storage-names" name="storage-name" size="10">
+                    <datalist id="storage-names">
+                    </datalist>
+
+        			<button id="open">&nbsp;Open&nbsp;</button>
+                    <select id="open-select">
+                    </select>
+                    <button id="load-from">&nbsp;LoadFrom&nbsp;</button>
+                    <input id="code-url" type="text" name="code-url"
+                        value="http://vysoky.pythonanywhere.com/chessboard/static/walk.py" size="20">
+    	        </div>
+    		    <div id="editor"></div>
+    	    </div>
+
         <script type="text/python3">
             from browser import window
             window.scrollTo(0, 0)

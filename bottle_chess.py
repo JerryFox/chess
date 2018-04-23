@@ -8,12 +8,24 @@ import os, os.path
 #import chess_exercise01 as chess
 import chess
 
-chess.CHESS_IMG_FOLDER = "/static/images/"
-chess.SCRIPT_FOLDER = "/static/scripts/"
-chess.CSS_FOLDER = "/static/css/"
+from config import PROJECT_DIRECTORY, CHESS_IMG_FOLDER, SCRIPT_FOLDER, CSS_FOLDER, ROOT, PATH_PREFIX
 
-ROOT = "/home/vysoky"   # where are files serving from
+"""
+PROJECT_DIRECTORY = "/home/vysoky/projects/chess"
+HOME_DIRECTORY = "/home/vysoky"
+
+CHESS_IMG_FOLDER = "/static/images/"
+SCRIPT_FOLDER = "/static/scripts/"
+CSS_FOLDER = "/static/css/"
+
+ROOT = HOME_DIRECTORY           # where are files serving from
 PATH_PREFIX = "/files"          # path prefix in browser
+"""
+
+chess.CHESS_IMG_FOLDER = CHESS_IMG_FOLDER
+chess.SCRIPT_FOLDER = SCRIPT_FOLDER
+chess.CSS_FOLDER = CSS_FOLDER
+
 
 
 @route("/")
@@ -25,14 +37,14 @@ def kudy_z_nudy():
 @route('/chessboard/<name:re:.*chess\.py>')
 @route('/chess.py')
 def send_static_chess(name=""):
-    return static_file("chess.py", root='/home/vysoky/projects/chess')
+    return static_file("chess.py", root=PROJECT_DIRECTORY)
 
 
 #### python files in root or in /chessboard/...
 @route('/<name:re:[^\/]*\.py>')
 @route('/chessboard/<name:re:.*\.py>')
 def pokus(name=""):
-    py_folder = '/home/vysoky/projects/chess/static/scripts'
+    py_folder = PROJECT_DIRECTORY + '/static/scripts'
     file = name.split("/")[-1]
     fpath = py_folder + "/" + file
     # return appropriate file or abort
@@ -48,7 +60,7 @@ def pokus(name=""):
 # static files
 @route('/static/<filename:path>')
 def send_static(filename):
-    return static_file(filename, root='/home/vysoky/projects/chess/static')
+    return static_file(filename, root=PROJECT_DIRECTORY + '/static')
 
 @route("/chessboard/<position>/reset/<positions>")
 def chessboard_reset_fields(position="base", positions=""):

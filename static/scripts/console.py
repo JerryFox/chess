@@ -4,6 +4,8 @@ import traceback
 from browser import document as doc
 from browser import window, alert, console
 
+from browser.local_storage import storage
+
 _credits = """    Thanks to CWI, CNRI, BeOpen.com, Zope Corporation and a cast of thousands
     for supporting Python development.  See www.python.org for more information."""
 
@@ -68,7 +70,14 @@ def write(data):
 
 sys.stdout.write = sys.stderr.write = write
 history = []
-current = 0
+
+if "_hist" in storage:
+    h = eval(storage["_hist"])
+    for (i, item) in enumerate(h):
+        h[i] = item.replace("\\\\n", "\n")
+    history = h
+current = len(history)
+
 _status = "main"  # or "block" if typing inside a block
 
 # execution namespace
@@ -77,6 +86,8 @@ editor_ns = {'credits':credits,
     'license':license,
     "hist":history,
     '__name__':'__main__'}
+
+doc.ch_editor_ns = editor_ns
 
 def cursorToEnd(*args):
     pos = len(doc['code'].value)
@@ -108,11 +119,15 @@ def myKeyPress(event):
             currentLine = src[src.rfind('...') + 4:]
         if _status == 'main' and not currentLine.strip():
             doc['code'].value += '\n>>> '
+            cursorToEnd()
             event.preventDefault()
             return
         doc['code'].value += '\n'
         history.append(currentLine)
         current = len(history)
+
+        storage["_hist"] = str(history[-100:])
+
         if _status == "main" or _status == "3string":
             try:
                 _ = editor_ns['_'] = eval(currentLine, editor_ns)
@@ -169,7 +184,7 @@ def myKeyDown(event):
     global _status, current
     if event.keyCode == 37:  # left arrow
         sel = get_col(doc['code'])
-        if sel < 5:
+        if False: #sel < 5:
             event.preventDefault()
             event.stopPropagation()
     elif event.keyCode == 36:  # line start
@@ -181,19 +196,26 @@ def myKeyDown(event):
         if current > 0:
             pos = doc['code'].selectionStart
             col = get_col(doc['code'])
-            # remove current line
-            doc['code'].value = doc['code'].value[:pos - col + 4]
+            # remove current line (lines)
+            ctext = doc["code"].value
+            prompt_pos = max(ctext.rfind(">>>"), ctext.rfind("...")) + 4
+            doc['code'].value = doc['code'].value[:prompt_pos]
             current -= 1
             doc['code'].value += history[current]
+            cursorToEnd()
         event.preventDefault()
     elif event.keyCode == 40:  # down
-        if current < len(history) - 1:
+        if current < len(history):
             pos = doc['code'].selectionStart
             col = get_col(doc['code'])
-            # remove current line
-            doc['code'].value = doc['code'].value[:pos - col + 4]
+            # remove current line (lines)
+            ctext = doc["code"].value
+            prompt_pos = max(ctext.rfind(">>>"), ctext.rfind("...")) + 4
+            doc['code'].value = doc['code'].value[:prompt_pos]
             current += 1
-            doc['code'].value += history[current]
+            if current < len(history):
+                doc['code'].value += history[current]
+                cursorToEnd()
         event.preventDefault()
     elif event.keyCode == 8:  # backspace
         src = doc['code'].value

@@ -1,5 +1,4 @@
 from browser import timer, document as doc
-import random
 from walk import knight_walk0, knight_walk1
 
 

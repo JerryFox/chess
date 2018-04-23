@@ -3,6 +3,8 @@ from chess import Chessboard
 from http import cookies
 from moves import get_chessboard
 from select_deselect import select_element
+from browser.local_storage import storage
+import time
 
 document.ch_selected_element = None
 
@@ -97,7 +99,6 @@ def figures_counting(event):
     return chessboard.position
 
 def go_to_position(event):
-    import browser
     chessboard = Chessboard("blank")
     for figure in document.get(selector=".chess-figure"):
         figure_file = figure.getAttribute("xlink:href")
@@ -112,7 +113,7 @@ def go_to_position(event):
         if column < 8 and row < 8:
             chessboard.chessboard[row][column] = figure_shortcut
     chessboard.set_position_to_packed()
-    browser.window.open("http://vysoky.pythonanywhere.com/chessboard/" + chessboard.position, "_self")
+    window.open("http://vysoky.pythonanywhere.com/chessboard/" + chessboard.position, "_self")
     return chessboard.position
 
 def chessboard_hide_show(event):
@@ -169,6 +170,28 @@ def zoom_in(event):
 def import_module(evt=None):
     module = __import__(document["import-module"].value)
 
+def open_storage(evt=None):
+    storage_name = document["open-select"].value
+    document["editor"].reset_src(storage_name)
+    document["storage-name"].value = storage_name
+
+def save_to_storage(evt=None):
+    storage_name = document["storage-name"].value
+    editor = window.ace.edit("editor")
+    if not storage_name in storage:
+        document["open-select"].innerHTML += '<option value="{}">{}</option>\n'\
+            .format(storage_name, storage_name)
+        document["storage-names"].innerHTML += '<option value="{}"></option>\n'\
+            .format(storage_name)
+    storage[storage_name] = editor.getValue()
+    document["editor"].storage_name = storage_name
+    document["storage-name"].value = storage_name
+
+def load_file(evt=None):
+    editor = window.ace.edit("editor")
+    fake_qs = '?foo=%s' %time.time()
+    content = open(document["code-url"].value + fake_qs).read()
+    editor.setValue(content)
 
 
 document["but-go-to-position"].bind("click", go_to_position)
@@ -178,6 +201,10 @@ document["but-console-hide-show"].bind("click", console_hide_show)
 document["but-zoom-out"].bind("click", zoom_out)
 document["but-zoom-in"].bind("click", zoom_in)
 document["but-test"].bind("click", import_module)
+
+document["open"].bind("click", open_storage)
+document["save-to"].bind("click", save_to_storage)
+document["load-from"].bind("click", load_file)
 
 width = document.get(selector="svg.chessboard")[0].getAttribute("width")
 document["zoom-display"].text = width
@@ -205,6 +232,24 @@ if "chess_console" in s.keys() and s["chess_console"] == "hidden":
         pass
     else:
         c.classList.add("hidden")
+
+# files in local storage:
+
+document["open-select"].innerHTML = ""
+document["storage-names"].innerHTML = ""
+storage_names = []
+for i in storage:
+    if i[0] != "_":
+        storage_names.append(i)
+        document["open-select"].innerHTML += '<option value="{}">{}</option>\n'.format(i, i)
+        document["storage-names"].innerHTML += '<option value="{}"></option>\n'.format(i)
+if "py_src" in storage_names or not storage_names:
+    document["storage-name"].value = "py_src"
+    document["open-select"].value = "py_src"
+else:
+    document["storage-name"].value = storage_names[0]
+    document["open-select"].value = storage_names[0]
+
 
 document.ch_board = get_chessboard()
 

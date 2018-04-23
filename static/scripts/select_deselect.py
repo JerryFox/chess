@@ -2,7 +2,7 @@ from browser import document
 #from chess_brython import Chess_figure
 from chess import Chessboard
 from browser import document as doc, timer, alert
-import random
+from random import choice
 
 
 
@@ -144,7 +144,7 @@ class ChessFigure:
                                     move = m1
                                     break
                     if not figure_on_destination:
-                        move = random.choice(valid_moves)
+                        move = choice(valid_moves)
                     # remove other figure
                     if self.chessboard.figures[move[0]][move[1]]:
                         self.chessboard.remove_figure(move[0], move[1])
