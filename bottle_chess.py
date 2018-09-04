@@ -7,8 +7,10 @@ from bottle import default_app, route, static_file, request, abort
 import os, os.path
 #import chess_exercise01 as chess
 import chess
+import MySQLdb, json
 
-from config import PROJECT_DIRECTORY, CHESS_IMG_FOLDER, SCRIPT_FOLDER, CSS_FOLDER, ROOT, PATH_PREFIX
+from hiddenconfig import PROJECT_DIRECTORY, CHESS_IMG_FOLDER, SCRIPT_FOLDER, CSS_FOLDER, ROOT, PATH_PREFIX, SHOW_HIDDEN
+from hiddenconfig import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME
 
 """
 PROJECT_DIRECTORY = "/home/vysoky/projects/chess"
@@ -26,6 +28,16 @@ chess.CHESS_IMG_FOLDER = CHESS_IMG_FOLDER
 chess.SCRIPT_FOLDER = SCRIPT_FOLDER
 chess.CSS_FOLDER = CSS_FOLDER
 
+
+
+@route("/data")
+def sql_data():
+    db = MySQLdb.connect(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME)
+    cursor = db.cursor()
+    query = 'select * from Country where Code like "C%"'
+    cursor.execute(query)
+    data = cursor.fetchall()
+    return json.dumps(data)
 
 
 @route("/")
@@ -93,12 +105,20 @@ def chessboard(position="base"):
     ch = chess.Chessboard(position)
     return ch.get_html(zoom=zoom)
 
+def listdir_nohidden(path):
+    for f in os.listdir(path):
+        if not f.startswith('hidden'):
+            yield f
+
 @route(PATH_PREFIX)
 @route(PATH_PREFIX + '<filepath:path>')
 def server_static(filepath="/"):
     ipath = ROOT + filepath
     if os.path.isdir(ipath):
-        list_dir = os.listdir(ipath)
+        if SHOW_HIDDEN: 
+            list_dir = os.listdir(ipath)
+        else: 
+            list_dir = listdir_nohidden(ipath)
         html_template = """
 <html>
     <head>
@@ -133,7 +153,10 @@ def server_static(filepath="/"):
             items += line.format(iclass, PATH_PREFIX + os.path.join(filepath, item[1]), item[1])
         return html_template.format(path=filepath, items=items)
     else:
-        return static_file(filepath, root=ROOT)
+        if SHOW_HIDDEN or not os.path.basename(filepath).startswith("hidden"): 
+            return static_file(filepath, root=ROOT)
+        else: 
+            return "I can't it show..."
 
 application = default_app()
 
