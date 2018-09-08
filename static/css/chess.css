@@ -108,11 +108,12 @@ code.file{
     color:#fff;
     font-family:'Oxygen Mono', Consolas, 'Liberation Mono', 'DejaVu Sans Mono', monospace;
     font-size:16px;
-    overflow:auto
+    overflow:auto;
+    padding: 3px;
 }
 
 textarea {
-    height: 400px;
+    height: 394px;
     width: 100%;
 }
 
