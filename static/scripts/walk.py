@@ -57,9 +57,11 @@ def go(evt=None):
     #print(row, col, shortcut)
     return figure
 
-def run():
-    f = doc.ch_board.add_figure("n")
+def run(fig="n"):
+    """ads and runs a knight"""
+    f = doc.ch_board.add_figure(fig)
     f.timer_interval = 2000
+    doc.my_figure = f
     f.go()
 
 def knight_walk0(self, valid_moves):
@@ -94,14 +96,36 @@ def knight_walk1(self, valid_moves):
     add_label(move[0], move[1], str(self.counter).zfill(2))
     self.idtimer = timer.set_timeout(self.go, self.timer_interval)
 
+def knight_walk2(self, valid_moves):
+    """walk around the circle path"""
+    actual_position = [self.row, self.col]
+    next_number = (CIRCLE_KNIGHT_WALK[self.row][self.col] + 1) % 64 
+    for move in valid_moves: 
+        if CIRCLE_KNIGHT_WALK[move[0]][move[1]] == next_number: 
+            break
+    # remove other figure
+    if self.chessboard.figures[move[0]][move[1]]:
+        self.chessboard.remove_figure(move[0], move[1])
+    self.chessboard.add_figure("p" if self.shortcut.islower() else "P", self.row, self.col)
+    self.move_to(move[0], move[1])
+    self.counter += 1
+    add_label(move[0], move[1], str(self.counter).zfill(2))
+    self.idtimer = timer.set_timeout(self.go, self.timer_interval)
+
 def test():
     pass
 
-def add_fig():
-    fig = "p"
+def add_fig(fig=None):
+    """figure adding on random position"""
+    if fig: 
+        doc.ch_adding_figure = fig
+    try: 
+        fig = doc.ch_adding_figure
+    except: 
+        doc.ch_adding_figure = "P"
     doc.ch_time = 2000
     where = randint(0, 63)
-    doc.ch_board.add_figure(fig, where // 8, where % 8)
+    doc.ch_board.add_figure(doc.ch_adding_figure, where // 8, where % 8)
     doc.ch_idtimer = timer.set_timeout(add_fig, doc.ch_time)
 
 
@@ -109,4 +133,5 @@ doc["but-test"].text = "go"
 doc["import-module"].value = "knight_walk1"
 doc["but-test"].unbind("click")
 doc["but-test"].bind("click", go)
+
 
