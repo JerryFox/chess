@@ -3,13 +3,30 @@
 
 # chess exercise application for seminar
 
+import os, os.path, sys
+
+# temporary due to kraken
+ipath = "/home/vysokyjar/venv/mysql/lib/python3.6/site-packages"
+if not ipath in sys.path: 
+    sys.path.append(ipath)
+# temporary - end
+
+# destroy old imports due to kraken 
+if "chess" in sys.modules: 
+    del sys.modules["chess"]
+if "hiddenconfig" in sys.modules: 
+    del sys.modules["hiddenconfig"]
+if "bottle" in sys.modules: 
+    del sys.modules["bottle"]
+# destroy - end
+
 from bottle import default_app, route, static_file, request, abort
-import os, os.path
+
 #import chess_exercise01 as chess
 import chess
 import MySQLdb, json
 
-from hiddenconfig import PROJECT_DIRECTORY, CHESS_IMG_FOLDER, SCRIPT_FOLDER, CSS_FOLDER, ROOT, PATH_PREFIX, SHOW_HIDDEN
+from hiddenconfig import PROJECT_DIRECTORY, CHESS_IMG_FOLDER, SCRIPT_FOLDER, CSS_FOLDER, ROOT, PATH_PREFIX, INTER_PATH, SHOW_HIDDEN
 from hiddenconfig import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME
 
 """
@@ -42,7 +59,7 @@ def sql_data():
 
 @route("/")
 def kudy_z_nudy():
-    return "<h1>nothing here but love...</h1>"
+    return "<h1>nothing here but GREAT love...</h1>"
 
 
 # static file chess.py from root (due to import import chess)
@@ -150,7 +167,7 @@ def server_static(filepath="/"):
         for item in list_isfile:
             iclass = "file" if item[0] else "folder"
             line = '<li class="{}"><a href="{}">{}</a></li>\n'
-            items += line.format(iclass, PATH_PREFIX + os.path.join(filepath, item[1]), item[1])
+            items += line.format(iclass,INTER_PATH + PATH_PREFIX + os.path.join(filepath, item[1]), item[1]) 
         return html_template.format(path=filepath, items=items)
     else:
         if SHOW_HIDDEN or not os.path.basename(filepath).startswith("hidden"): 
