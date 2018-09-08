@@ -6,6 +6,8 @@ from select_deselect import select_element
 from browser.local_storage import storage
 import time
 
+from config import INTER_PATH
+
 document.ch_selected_element = None
 
 def click_on_chessboard(evt):
@@ -113,7 +115,7 @@ def go_to_position(event):
         if column < 8 and row < 8:
             chessboard.chessboard[row][column] = figure_shortcut
     chessboard.set_position_to_packed()
-    window.open("http://vysoky.pythonanywhere.com/chessboard/" + chessboard.position, "_self")
+    window.open(INTER_PATH + "/chessboard/" + chessboard.position, "_self")
     return chessboard.position
 
 def chessboard_hide_show(event):
