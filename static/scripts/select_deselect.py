@@ -91,7 +91,10 @@ class ChessFigure:
         self.chessboard = chessboard
         chessboard.figures[self.row][self.col].append(self)
 
-    def move_to(self, row, col):
+    def move_to(self, row, col=None):
+        if col is None: 
+            col = row[1]
+            row = row[0]
         if row in range(len(self.chessboard.chessboard)) and col in range(len(self.chessboard.chessboard[row])):
             oldrow = self.row
             oldcol = self.col
@@ -107,6 +110,15 @@ class ChessFigure:
                 m[5] = str(int(m[5]) + 100 * (row - oldrow))
                 self.svg_image.setAttribute("transform", "matrix(" + " ".join(m) + ")")
                 doc.querySelector('.figures').insertAdjacentElement('beforeend',self.svg_image)
+    
+    def remove(self): 
+        board = self.chessboard
+        self.svg_image.remove()
+        self.chessboard = None
+        board.figures[self.row][self.col].remove(self)
+
+    def get_valid_moves(self): 
+        return get_valid_moves(self.shortcut, self.row, self.col, self.chessboard)
 
     def go(self):
         if self.shortcut.upper() == "N":
@@ -119,7 +131,7 @@ class ChessFigure:
                 figure_on_destination = None
                 if new_row in range(8) and new_col in range(8):
                     if self.chessboard.figures[new_row][new_col]:
-                        figure_on_destination = self.chessboard.figures[new_row][new_col][-1]
+                        figure_on_destination = selvalidf.chessboard.figures[new_row][new_col][-1]
                     if not figure_on_destination or figure_on_destination.shortcut.isupper() != \
                         self.shortcut.isupper():
                         valid_moves.append([new_row, new_col])
@@ -197,14 +209,18 @@ class Board(Chessboard):
                     ch[row][col][-1].chessboard = None
                     ch[row][col].remove(ch[row][col][-1])
 
-    def remove_figure(self, row, col):
+    def remove_figure(self, row, col=None):
+        if col is None: 
+            col = row[1]
+            row = row[0]
         if self.figures[row][col]:
-            self.figures[row][col][-1].svg_image.remove()
-            self.figures[row][col][-1].chessboard = None
-            self.figures[row][col].remove(self.figures[row][col][-1])
-
+            self.figures[row][col][0].svg_image.remove()
+            self.figures[row][col][0].chessboard = None
+            self.figures[row][col].remove(self.figures[row][col][0])
+            
 
 def get_valid_moves(shortcut, row, col, chessboard):
+    valid_moves = None
     if shortcut.upper() == "N":
         pos_moves = [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2]]
         valid_moves = []
@@ -218,6 +234,29 @@ def get_valid_moves(shortcut, row, col, chessboard):
                 if not figure_on_destination or figure_on_destination.shortcut.isupper() != \
                     shortcut.isupper():
                     valid_moves.append([new_row, new_col])
+    elif shortcut.upper() == "P": 
+        valid_moves = []
+        new_row1 = None
+        if shortcut == "P": 
+            new_row = row - 1
+            if row == 6: 
+                new_row1 = row - 2
+        else:
+            new_row = row + 1
+            if row == 1: 
+                new_row1 = row + 2
+        if new_row in range(8) and not chessboard.figures[new_row][col]: 
+            valid_moves.append([new_row, col])
+            if new_row1 and not chessboard.figures[new_row][col]: 
+                valid_moves.append([new_row1, col])
+        for shift in [-1, 1]: 
+            new_col = col + shift
+            if new_row in range(8) and new_col in range(8): 
+                figure_on_destination = chessboard.figures[new_row][new_col]
+                if  figure_on_destination and figure_on_destination[-1].shortcut.isupper() != \
+                    shortcut.isupper():
+                    valid_moves.append([new_row, new_col])
+
     return valid_moves
 
 def get_knight_moves(row, col):
