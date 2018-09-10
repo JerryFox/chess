@@ -15,7 +15,7 @@ chessboard[7] = list("rnbkqbnr")
 
 def packed_to_unpacked_position(position="base"):
     if position == "base":
-        position = "RNBKQBNR" + "P" * 8 + "-" * 32 + "p" * 8 + "rnbkqbnr"
+        position = "rnbqkbnr" + "p" * 8 + "-" * 32 + "P" * 8 + "RNBQKBNR"
     elif position == "blank":
         position = ""
     number_of_blanks = 0
@@ -57,8 +57,8 @@ onmousedown="if (event.preventDefault) event.preventDefault()"
 
 def beside_figures_images():
     # images beside chessboard (for adding on chessboard)
-    add_board = [["K", "Q"], ["R", "B"], ["N", "P"], ["", ""], ["", ""],
-                 ["k", "q"], ["r", "b"], ["n", "p"]]
+    add_board = [["k", "q"], ["r", "b"], ["n", "p"], ["", ""], ["", ""],
+                 ["K", "Q"], ["R", "B"], ["N", "P"]]
     images = ""
     for row in range(len(add_board)):
         for column in range(len(add_board[0])):
