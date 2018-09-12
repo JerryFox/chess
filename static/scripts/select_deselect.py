@@ -28,6 +28,7 @@ def select_element(evt):
     else:
         document.ch_moving_figure = document.ch_board.figures[document.coord[0]][document.coord[1]][-1]
         document.ch_board.figures[document.coord[0]][document.coord[1]].remove(document.ch_moving_figure)
+        document.ch_current_coord = document.coord
     # move selected figure on top
     document.querySelector('.figures').insertAdjacentElement('beforeend',selected_element)
     # save variables to document
@@ -64,6 +65,16 @@ def deselect_element(evt):
             sel_elem.remove()
         else:
             if document.ch_moving_figure:
+                # move validation
+                if hasattr(document, "ch_move_validation") and document.ch_move_validation: 
+                    if [row, col] in document.ch_moving_figure.get_valid_moves(): 
+                        valid = True
+                    else: 
+                        valid = False
+                        (row, col) = document.ch_current_coord
+                        cm = document.ch_current_matrix
+                        m = [str(i) for i in cm]
+                        sel_elem.setAttribute("transform", "matrix ({})".format(" ".join(m)))
                 document.ch_board.figures[row][col].append(document.ch_moving_figure)
                 document.ch_moving_figure.row = row
                 document.ch_moving_figure.col = col
@@ -220,7 +231,7 @@ class Board(Chessboard):
             
 
 def get_valid_moves(shortcut, row, col, chessboard):
-    valid_moves = None
+    valid_moves = []
     if shortcut.upper() == "N":
         pos_moves = [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2]]
         valid_moves = []
@@ -247,7 +258,7 @@ def get_valid_moves(shortcut, row, col, chessboard):
                 new_row1 = row + 2
         if new_row in range(8) and not chessboard.figures[new_row][col]: 
             valid_moves.append([new_row, col])
-            if new_row1 and not chessboard.figures[new_row][col]: 
+            if new_row1 and not chessboard.figures[new_row1][col]: 
                 valid_moves.append([new_row1, col])
         for shift in [-1, 1]: 
             new_col = col + shift
@@ -256,7 +267,39 @@ def get_valid_moves(shortcut, row, col, chessboard):
                 if  figure_on_destination and figure_on_destination[-1].shortcut.isupper() != \
                     shortcut.isupper():
                     valid_moves.append([new_row, new_col])
-
+    elif shortcut.upper() in "QK":
+        directions = [[1, 0], [1, 1], [0, 1], [1, -1]]
+        coefs = []
+        if shortcut.upper() == "Q":
+            coefs = [[-row - 1, 8 - row], [-min(row, col) - 1, 8 - max(row, col)], \
+                [-col - 1, 8 - col], [max(-row - 1, col - 8), min(8 - row, col + 1)]] 
+        else: 
+            coefs = [[max(-row - 1, -2), min(8 - row, 2)], \
+                [max(-min(row, col) - 1, -2), min(8 - max(row, col),2)], \
+                [max(-col - 1, -2), min(8 - col, 2)], \
+                [max(max(-row - 1, col - 8), -2), min(min(8 - row, col + 1), 2)]]
+    elif shortcut.upper() == "B":
+        directions = [[1, 1], [1, -1]]
+        coefs = [[-min(row, col) - 1, 8 - max(row, col)], [max(-row - 1, col - 8), min(8 - row, col + 1)]]
+    elif shortcut.upper() == "R":
+        directions = [[1, 0], [0, 1]]
+        coefs = [[-row - 1, 8 - row], [-col - 1, 8 - col]]
+    if shortcut.upper() in "QKBR" and coefs: 
+        for index, direction in enumerate(directions): 
+            #for coef in range(coefs[index][0], coefs[index][1]): 
+            for (ifrom, ito, istep) in ((-1, coefs[index][0], -1), (1, coefs[index][1], 1)):
+                for coef in range(ifrom, ito, istep): 
+                    new_row = row + coef * direction[0]
+                    new_col = col + coef * direction[1]
+                    #if coef != 0: 
+                    figure_on_destination = chessboard.figures[new_row][new_col]
+                    if  figure_on_destination:
+                        if figure_on_destination[-1].shortcut.isupper() != \
+                            shortcut.isupper():
+                            valid_moves.append([new_row, new_col])
+                        break
+                    else: 
+                        valid_moves.append([new_row, new_col])
     return valid_moves
 
 def get_knight_moves(row, col):
