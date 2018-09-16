@@ -2,7 +2,7 @@ from browser import document, alert, window
 from chess import Chessboard
 from http import cookies
 from moves import get_chessboard
-from select_deselect import select_element
+from select_deselect import select_element, add_target, remove_targets, set_targets_from_moves
 from browser.local_storage import storage
 import time
 
@@ -13,6 +13,7 @@ document.ch_selected_element = None
 def click_on_chessboard(evt):
     x = document["cursor"].getAttribute("x")
     y = document["cursor"].getAttribute("y")
+    document.ch_coord = [int(y) // 100, int(x) // 100]
     if evt.shiftKey:
         targets = document.get(selector="rect.targets")
         remove = False
@@ -23,24 +24,11 @@ def click_on_chessboard(evt):
                 break
         if not remove:
             # add new target
-            #<rect class="targets" fill="none" stroke="#00ff00" stroke-width="2" x="200" y="200" width="92" height="92"
-            #    transform="matrix(1 0 0 1 9 9)"/>
-            cursor = document["cursor"]
-            clone = cursor.cloneNode()
-            clone.removeAttribute("id")
-            clone.setAttribute("class", "targets")
-            clone.setAttribute("stroke", "darkgreen")
-            clone.setAttribute("stroke-width", "4")
-            clone.setAttribute("x", x)
-            clone.setAttribute("y", y)
-            clone.setAttribute("width", "90")
-            clone.setAttribute("height", "90")
-            clone.setAttribute("transform", "matrix(1 0 0 1 10 10)")
-            cursor.insertAdjacentElement('beforebegin', clone)
+            add_target(x, y)
     else:
         document["selector"].setAttribute("x", x)
         document["selector"].setAttribute("y", y)
-
+        
 def move_over_chessboard(evt):
     document["coordinates"].text = "x:{} y:{}".format(evt.x, evt.y)
     bound_rect = document["chessboard"].getBoundingClientRect()

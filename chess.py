@@ -244,6 +244,7 @@ class Chessboard:
     def __init__(self, position="base"):
         self.position = position
         self.chessboard = self.get_chessboard()
+        self.moves = []
 
     def get_chessboard(self):
         position = packed_to_unpacked_position(self.position)

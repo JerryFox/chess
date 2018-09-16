@@ -45,6 +45,9 @@ def get_chessboard():
     #alert("figures count total: {} \n on board: {}".format(figures_count, on_board))
     #browser.window.open("http://vysoky.pythonanywhere.com/chessboard/" + chessboard.position, "_self")
     doc.ch_board = chessboard
+    doc.ch_move_validation = True
+    doc.ch_last_color = ""
+    doc.ch_kb_moves = [['d4', 'f5'], ['e4', 'fxe4'], ['Nc3', 'Nf6'], ['Bg5', 'c6'], ['f3', 'e3'], ['Bxe3', 'd5'], ['Bd3', 'g6'], ['Qd2', 'Nbd7'], ['O-O-O', 'b5'], ['Bh6', 'Nb6'], ['Nge2', 'b4'], ['Nb1', 'a5'], ['b3', 'Qd6'], ['Bf4', 'Qe6'], ['Rde1', 'Qf7'], ['Ng3', 'Bg7'], ['Bh6', 'O-O'], ['Bxg7', 'Qxg7'], ['h4', 'c5'], ['dxc5', 'Nbd7'], ['Qe3', 'e5'], ['c6', 'a4'], ['cxd7', 'Nxd7'], ['h5', 'axb3'], ['axb3', 'Ra2'], ['hxg6', 'e4'], ['fxe4', 'Ba6'], ['exd5', 'Nc5'], ['gxh7+', 'Kh8'], ['Bg6', 'Qb2+'], ['Kd1', 'Ra1'], ['Qxc5', 'Rxb1+'], ['Kd2', 'Rf2+'], ['Re2', 'Rxh1'], ['Qxb4', '0-1']]
     return chessboard
 
 def accept_moves():
@@ -69,21 +72,25 @@ def reset_moves():
         get_chessboard()
 
 def add_figures(chessboard):
+    # chessboard - matrix of figures shortcuts
     if not doc.ch_board:
         get_chessboard()
     source = doc.ch_board.beside_figures
     for row in range(len(chessboard)):
         for col in range(len(chessboard[row])):
-            if chessboard[row][col].strip():
+            shortcut = chessboard[row][col].strip()
+            if shortcut:
                 #add_figure(chessboard[row][col], row, col)
-                figure = source[chessboard[row][col]]
-                clone = figure.cloneNode()
+                figure_img = source[chessboard[row][col]]
+                clone = figure_img.cloneNode()
                 x = col * 100 + int(clone.getAttribute("x")) % 100
                 y = row * 100 + int(clone.getAttribute("y")) % 100
                 clone.setAttribute("x", str(x))
                 clone.setAttribute("y", str(y))
-                figure.insertAdjacentElement('beforebegin', clone)
+                figure_img.insertAdjacentElement('beforebegin', clone)
                 clone.bind("mousedown", select_element)
                 doc.querySelector('.figures').insertAdjacentElement('beforeend',clone)
-                doc.ch_board.figures[row][col].append(clone)
+                figure = ChessFigure(shortcut, clone, row, col)
+                doc.ch_board.figures[row][col].append(figure)
+
 
