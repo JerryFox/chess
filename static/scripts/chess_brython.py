@@ -28,6 +28,7 @@ def click_on_chessboard(evt):
     else:
         document["selector"].setAttribute("x", x)
         document["selector"].setAttribute("y", y)
+        document.ch_selector = [int(y) // 100, int(x) // 100]
         
 def move_over_chessboard(evt):
     document["coordinates"].text = "x:{} y:{}".format(evt.x, evt.y)

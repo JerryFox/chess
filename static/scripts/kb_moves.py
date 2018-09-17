@@ -1,3 +1,7 @@
+from chess import Chessboard
+
+ch = Chessboard()
+
 mvs = [['d4', 'f5'], ['e4', 'fxe4'], ['Nc3', 'Nf6'], ['Bg5', 'c6'],
        ['f3', 'e3'], ['Bxe3', 'd5'], ['Bd3', 'g6'], ['Qd2', 'Nbd7'],
        ['O-O-O', 'b5'], ['Bh6', 'Nb6'], ['Nge2', 'b4'], ['Nb1', 'a5'],

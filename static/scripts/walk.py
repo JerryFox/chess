@@ -69,8 +69,10 @@ def knight_walk0(self, valid_moves):
     # remove other figure
     if self.chessboard.figures[move[0]][move[1]]:
         self.chessboard.remove_figure(move[0], move[1])
-    self.chessboard.add_figure("p" if self.shortcut.islower() else "P", self.row, self.col)
+    row = self.row
+    col = self.col
     self.move_to(move[0], move[1])
+    self.chessboard.add_figure("p" if self.shortcut.islower() else "P", row, col)
     self.counter += 1
     add_label(move[0], move[1], str(self.counter).zfill(2))
     self.idtimer = timer.set_timeout(self.go, self.timer_interval)
@@ -90,8 +92,10 @@ def knight_walk1(self, valid_moves):
     # remove other figure
     if self.chessboard.figures[move[0]][move[1]]:
         self.chessboard.remove_figure(move[0], move[1])
-    self.chessboard.add_figure("p" if self.shortcut.islower() else "P", self.row, self.col)
+    row = self.row
+    col = self.col
     self.move_to(move[0], move[1])
+    self.chessboard.add_figure("p" if self.shortcut.islower() else "P", row, col)
     self.counter += 1
     add_label(move[0], move[1], str(self.counter).zfill(2))
     self.idtimer = timer.set_timeout(self.go, self.timer_interval)
@@ -106,8 +110,10 @@ def knight_walk2(self, valid_moves):
     # remove other figure
     if self.chessboard.figures[move[0]][move[1]]:
         self.chessboard.remove_figure(move[0], move[1])
-    self.chessboard.add_figure("p" if self.shortcut.islower() else "P", self.row, self.col)
+    row = self.row
+    col = self.col
     self.move_to(move[0], move[1])
+    self.chessboard.add_figure("p" if self.shortcut.islower() else "P", row, col)
     self.counter += 1
     add_label(move[0], move[1], str(self.counter).zfill(2))
     self.idtimer = timer.set_timeout(self.go, self.timer_interval)
@@ -133,5 +139,4 @@ doc["but-test"].text = "go"
 doc["import-module"].value = "knight_walk1"
 doc["but-test"].unbind("click")
 doc["but-test"].bind("click", go)
-
 

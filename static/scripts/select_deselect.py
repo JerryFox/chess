@@ -149,11 +149,11 @@ def deselect_element(evt):
                     if [row, col] in document.ch_moving_figure.get_valid_moves(): 
                         valid = True
                         # castlings - king moving two squares towards a rook
-                        castling = True
                         source = document.ch_current_coord
                         destination = [row, col]
                         sour_figure = document.ch_moving_figure
                         if sour_figure.shortcut in "Kk" and abs(source[1] - destination[1]) == 2: 
+                            castling = True
                             # appropriate rook move
                             if destination[1] > source[1]: 
                                 rook = doc.ch_board.figures[source[0]][7][-1]
@@ -242,11 +242,11 @@ class ChessFigure:
         board.chessboard[self.row][self.col] = ""
 
     def get_valid_moves(self): 
-        return get_valid_moves(self)
+        return self.chessboard.get_valid_moves(self.row, self.col, self.shortcut)
 
     def go(self):
         if self.shortcut.upper() == "N":
-            valid_moves = get_valid_moves(self.shortcut, self.row, self.col, self.chessboard)
+            valid_moves = self.get_valid_moves()
             """get_valid
             pos_moves = [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2]]
             for move in pos_moves:
@@ -274,7 +274,7 @@ class ChessFigure:
                     if not figure_on_destination:
                         # second move
                         for m1 in valid_moves:
-                            for m in get_valid_moves(self.shortcut, m1[0], m1[1], self.chessboard):
+                            for m in self.get_valid_moves():
                                 if self.chessboard.figures[m[0]][m[1]]:
                                     figure_on_destination = self.chessboard.figures[m[0]][m[1]][-1]
                                     move = m1
