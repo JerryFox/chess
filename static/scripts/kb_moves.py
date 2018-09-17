@@ -1,3 +1,8 @@
+import sys
+chpath = "/home/vysokyjar/projects/chess"
+if not chpath in sys.path: 
+    sys.path.append(chpath)
+
 from chess import Chessboard
 
 ch = Chessboard()
