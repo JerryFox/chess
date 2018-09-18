@@ -247,6 +247,7 @@ class Chessboard:
         self.moves = []
         self.last_color = None
         self.move_validation = True
+        self.trash = []
 
     def get_chessboard(self):
         position = packed_to_unpacked_position(self.position)
@@ -336,7 +337,7 @@ class Chessboard:
         c_moves = [pair[0] for pair in self.moves if pair[0] == [row, col]]
         return bool(c_moves)
 
-    def move(self, src, dst): 
+    def move(self, src, dst, add=None): 
         color = None
         sour_figure = self.chessboard[src[0]][src[1]]
         dest_figure = self.chessboard[dst[0]][dst[1]]
@@ -356,6 +357,9 @@ class Chessboard:
                     self.chessboard[src[0]][0] = ""
                     self.chessboard[src[0]][3] = rook
             self.last_color = "w" if sour_figure.isupper() else "b"
+            if dest_figure: 
+                self.trash.append([dest_figure, dst])
+                self.moves[-1].append("x")
             return True
         return False
 

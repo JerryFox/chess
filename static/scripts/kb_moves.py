@@ -63,11 +63,47 @@ def kb_move_analyze(kb_move='Nbd7', color="b"):
                     row = coordinate
     if shortcut:
         shortcut = shortcut.upper() if color == "w" else shortcut.lower()
-    print(shortcut, dest, row, col, " - ", capture, check)
+    return {"shortcut": shortcut, "dst": dest, "src_row": row, "src_col": col, "capture": capture, "check": check}
 
+def coor_str_to_num(str_coords): 
+    """transform "a1" coordinations to [0, 0] form"""
+    return [8 - int(str_coords[1]), ord(str_coords[0]) - ord("a")]
+
+
+result = mvs[-1][-1]
+mvs[-1].remove(result)
 for pair in mvs:
     for index, move in enumerate(pair): 
         color = "b" if index % 2 else "w"
         print(move, " ", end="")
-        kb_move_analyze(move, color)
+        anal = kb_move_analyze(move, color)
+        destination = coor_str_to_num(anal["dst"])
+        shortcut = anal["shortcut"]
+        if anal["src_row"] and anal["src_col"]: 
+            source = coor_str_to_num(anal["src_col"] + anal["src_row"]) 
+        else: 
+            # find suitable source square 
+            if anal["src_row"]: 
+                row = 8 - int(anal["src_row"])
+                for col in range(8): 
+                    if ch.chessboard[row][col] == shortcut and destination in ch.get_valid_moves(row, col): 
+                        break
+            elif anal["src_col"]: 
+                col = ord(anal["src_col"]) - ord("a")
+                for row in range(8): 
+                    if ch.chessboard[row][col] == shortcut and destination in ch.get_valid_moves(row, col): 
+                        break
+            else: 
+                ibreak = False
+                for row in range(8): 
+                    for col in range(8): 
+                        if ch.chessboard[row][col] == shortcut and destination in ch.get_valid_moves(row, col): 
+                            ibreak = True
+                            break
+                    if ibreak: 
+                        break
+            source = [row, col]
+        print([source, destination])
+        ch.move(source, destination)
     
+        

@@ -9,7 +9,7 @@ def kb_move(move, color):
     """knight base move"""
     pass
 
-def move(source, destination=None): 
+def move(source, destination=None, add=None): 
     """move figure from source to destination
     """
     if destination is None: 
@@ -45,7 +45,6 @@ def move(source, destination=None):
             else: 
                 rook = doc.ch_board.figures[source[0]][0][-1]
                 rook.move_to(source[0], 3)
-        doc.ch_last_color = "w" if sour_figure.shortcut.isupper() else "b"
         return (sour_figure, dest_figure)
 
 def add_target(x, y): 
@@ -164,7 +163,8 @@ def deselect_element(evt):
                         # remove oponent's figure
                         if document.ch_board.figures[row][col]: 
                             document.ch_board.figures[row][col][-1].remove()
-                        document.ch_last_color = "w" if document.ch_moving_figure.shortcut.isupper() else "b"
+                        #document.ch_last_color = "w" if document.ch_moving_figure.shortcut.isupper() else "b"
+                        document.ch_board.last_color = "w" if document.ch_moving_figure.shortcut.isupper() else "b"
                     else: 
                         # move reset
                         valid = False
@@ -224,6 +224,8 @@ class ChessFigure:
             self.moves.append([row, col])
             self.chessboard.chessboard[self.row][self.col] = self.shortcut
             self.chessboard.moves.append([[oldrow, oldcol], [row, col]])
+            # last_color
+            self.chessboard.last_color = "w" if self.shortcut.isupper() else "b"
             if self.svg_image:
                 # redisplay svg
                 m = self.svg_image.getAttribute("transform")
@@ -324,16 +326,23 @@ class Board(Chessboard):
         self.add_figures(figure + str(row) + str(col))
         return new_figure
 
-    def remove_figures(self, chessboard=None):
+    def remove_figures(self, chessboard=None, top_only=False):
         if not chessboard:
             chessboard = [["x" for col in range(8)] for row in range(8)]
         ch = self.figures
         for row in range(len(chessboard)):
             for col in range(len(chessboard[row])):
                 if chessboard[row][col] and ch[row][col]:
-                    ch[row][col][-1].svg_image.remove()
-                    ch[row][col][-1].chessboard = None
-                    ch[row][col].remove(ch[row][col][-1])
+                    self.chessboard[row][col] = ""
+                    if top_only:
+                        ch[row][col][-1].svg_image.remove()
+                        ch[row][col][-1].chessboard = None
+                        ch[row][col].remove(ch[row][col][-1])
+                    else: 
+                        for img in ch[row][col]: 
+                            img.svg_image.remove()
+                            img.chessboard = None
+                        ch[row][col] = []
 
     def remove_figure(self, row, col=None):
         if col is None: 
@@ -344,7 +353,17 @@ class Board(Chessboard):
             self.figures[row][col][0].chessboard = None
             self.figures[row][col].remove(self.figures[row][col][0])
             
+    def add_figures_from_board(self, chessboard=None): 
+        if chessboard is None: 
+            chessboard = Chessboard().chessboard
+        for ri, row in enumerate(chessboard):
+            for ci, col in enumerate(row): 
+                if col: 
+                    self.add_figure(col, ri, ci)
 
+            
+
+"""
 def get_valid_moves(figure):
     shortcut = figure.shortcut
     row = figure.row
@@ -433,6 +452,7 @@ def get_valid_moves(figure):
                     else: 
                         valid_moves.append([new_row, new_col])
     return valid_moves
+"""
 
 def get_knight_moves(row, col):
     """chess - knight moves

@@ -1,6 +1,7 @@
 """ configuration for chess application 
     hiddenconfig.py is valid name for configuration file """
 
+"""
 PROJECT_DIRECTORY = "/home/vysoky/projects/chess"
 HOME_DIRECTORY = "/home/vysoky"
 SHOW_HIDDEN = False # items with "hidden" prefix
@@ -17,3 +18,6 @@ DATABASE_HOST = 'vysoky.mysql.pythonanywhere-services.com'
 DATABASE_NAME = 'vysoky$default'
 DATABASE_USER = 'vysoky'
 DATABASE_PASSWORD = 'abrakadabra'
+"""
+from hiddenconfig.py import *
+
