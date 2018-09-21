@@ -116,60 +116,31 @@ if doc.getElementById("but-test"):
     parent = bgo.parentNode
     br = bgo.nextSibling
     parent.removeChild(bgo)
+    parent.removeChild(doc.getElementById("import-module"))
+    s = doc.createElement("span")
+    s.innerHTML = "&nbsp;&nbsp;&nbsp;"
+    parent.insertBefore(s, br)
 
-if doc.getElementById("import-module"): 
-    inp_box = doc["import-module"]
-    parent.removeChild(inp_box)
+    buttons = [
+        {"id": "but-back-end", "text": "🢤🢤🢤", "func": go_back_end}, 
+        {"id": "but-back-step", "text": "🢤🢤", "func": go_back_step}, 
+        {"id": "but-play-back", "text": "◀", "func": go_back}, 
+        {"id": "but-stop", "text": "⏹️", "func": stop}, 
+        {"id": "but-play-fwd", "text": "▶", "func": go}, 
+        {"id": "but-go-step", "text": "🢧🢧", "func": go_step}, 
+        {"id": "but-go-end", "text": "🢧🢧🢧", "func": go_end}, 
+        ]
+            
+    for b in buttons: 
+        if not doc.getElementById(b["id"]):
+            but = bgo.cloneNode(True)
+            but.text = b["text"]
+            but.setAttribute("id", b["id"])
+            but.bind("click", b["func"])
+            parent.insertBefore(but, br)
+            t = doc.createTextNode(" ")
+            parent.insertBefore(t, br)
 
-if not doc.getElementById("but-back-end"):
-    but = bgo.cloneNode(True)
-    but.text = "🢤🢤🢤️"
-    but.setAttribute("id", "but-back-end")
-    but.bind("click", go_back_end)
-    parent.insertBefore(but, br)
-    
-if not doc.getElementById("but-back-step"):
-    but = bgo.cloneNode(True)
-    but.text = "🢤🢤️"
-    but.setAttribute("id", "but-back-step")
-    but.bind("click", go_back_step)
-    parent.insertBefore(but, br)
-    
-if not doc.getElementById("but-play-back"):
-    bback = bgo.cloneNode(True)
-    bback.text = "◀️"
-    bback.setAttribute("id", "but-play-back")
-    bback.bind("click", go_back)
-    parent.insertBefore(bback, br)
-    
-if not doc.getElementById("but-stop"):
-    bstop = bgo.cloneNode(True)
-    bstop.text = "⏹️"
-    bstop.setAttribute("id", "but-stop")
-    bstop.bind("click", stop)
-    parent.insertBefore(bstop, br)
-
-if not doc.getElementById("but-play-fwd"):
-    but = bgo.cloneNode(True)
-    but.text = "▶️"
-    but.setAttribute("id", "but-play-fwd")
-    but.bind("click", go)
-    parent.insertBefore(but, br)
-    
-if not doc.getElementById("but-go-step"):
-    but = bgo.cloneNode(True)
-    but.text = "🢧🢧️"
-    but.setAttribute("id", "but-go-step")
-    but.bind("click", go_step)
-    parent.insertBefore(but, br)
-    
-if not doc.getElementById("but-go-end"):
-    but = bgo.cloneNode(True)
-    but.text = "🢧🢧🢧️"
-    but.setAttribute("id", "but-go-end")
-    but.bind("click", go_end)
-    parent.insertBefore(but, br)
-    
 def init(): 
     ch = doc.ch_board
     ch.position = "base"
@@ -186,4 +157,5 @@ def init():
     ch.timer_interval = 1000
 
 init()
+
 
