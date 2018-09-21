@@ -248,6 +248,8 @@ class Chessboard:
         self.last_color = None
         self.move_validation = True
         self.trash = []
+        self.move_counter = 0
+        self.initial_position = self.position
 
     def get_chessboard(self):
         position = packed_to_unpacked_position(self.position)
@@ -339,12 +341,14 @@ class Chessboard:
 
     def move(self, src, dst, add=None): 
         color = None
+        result = []
         sour_figure = self.chessboard[src[0]][src[1]]
         dest_figure = self.chessboard[dst[0]][dst[1]]
         if sour_figure and dst in self.get_valid_moves(src[0], src[1]): 
             self.chessboard[src[0]][src[1]] = ""
             self.chessboard[dst[0]][dst[1]] = sour_figure
             self.moves.append([src, dst])
+            result.append([src, dst])
             # castlings - king moving two squares towards a rook
             if sour_figure in "Kk" and abs(src[1] - dst[1]) == 2: 
                 # appropriate rook move
@@ -352,16 +356,17 @@ class Chessboard:
                     rook = self.chessboard[src[0]][7]
                     self.chessboard[src[0]][7] = ""
                     self.chessboard[src[0]][5] = rook
+                    result.append([[src[0], 7], [src[0], 5]])
                 else: 
                     rook = self.chessboard[src[0]][0]
                     self.chessboard[src[0]][0] = ""
                     self.chessboard[src[0]][3] = rook
+                    result.append([[src[0], 0], [src[0], 3]])
             self.last_color = "w" if sour_figure.isupper() else "b"
             if dest_figure: 
                 self.trash.append([dest_figure, dst])
                 self.moves[-1].append("x")
-            return True
-        return False
+        return result
 
     def get_valid_moves(self, row, col, shortcut=None):
         if shortcut is None: 

@@ -140,3 +140,9 @@ doc["import-module"].value = "knight_walk1"
 doc["but-test"].unbind("click")
 doc["but-test"].bind("click", go)
 
+if hasattr(doc, "ch_selector") and doc.ch_selector: 
+    (row, col) = doc.ch_selector
+    if doc.ch_board.figures[row][col]: 
+        f = doc.ch_board.figures[row][col][-1]
+
+

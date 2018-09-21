@@ -25,27 +25,21 @@ def move(source, destination=None, add=None):
     [source, destination] = items
     sour_figure = None
     dest_figure = None
-    try: 
+    ch = doc.ch_board
+    result = ch.move(source, destination) 
+    if result: 
         sour_figure = doc.ch_board.figures[source[0]][source[1]][-1]
-        dest_figure = doc.ch_board.figures[destination[0]][destination[1]][-1]
-    except: 
-        pass
-    if sour_figure: 
-        doc.ch_moving_figure = sour_figure
-    if sour_figure and destination in sour_figure.get_valid_moves(): 
-        if dest_figure: 
+        if len(ch.moves[-1]) > 2 and "x" in ch.moves[-1][-1]:
+            dest_figure = doc.ch_board.figures[destination[0]][destination[1]][-1]
             dest_figure.remove()
         sour_figure.move_to(destination)
-        # castlings - king moving two squares towards a rook
-        if sour_figure.shortcut in "Kk" and abs(source[1] - destination[1]) == 2: 
-            # appropriate rook move
-            if destination[1] > source[1]: 
-                rook = doc.ch_board.figures[source[0]][7][-1]
-                rook.move_to(source[0], 5)
-            else: 
-                rook = doc.ch_board.figures[source[0]][0][-1]
-                rook.move_to(source[0], 3)
-        return (sour_figure, dest_figure)
+        if len(result) > 1: 
+            # additional move
+            source = result[1][0]
+            destination = result[1][1]
+            sour_figure = doc.ch_board.figures[source[0]][source[1]][-1]
+            sour_figure.move_to(destination)
+    return (sour_figure, dest_figure)
 
 def add_target(x, y): 
     """target = cell rounded with green rectangle
@@ -96,7 +90,6 @@ def select_element(evt):
     else:
         document.ch_moving_figure = document.ch_board.figures[document.coord[0]][document.coord[1]][-1]
         document.ch_board.figures[document.coord[0]][document.coord[1]].remove(document.ch_moving_figure)
-        document.ch_board.chessboard[document.coord[0]][document.coord[1]] = ""
         document.ch_current_coord = document.coord
         #document.ch_move_validation = True
         if hasattr(document, "ch_move_validation") and document.ch_move_validation: 
@@ -145,26 +138,23 @@ def deselect_element(evt):
                 castling = False
                 # move validation
                 if hasattr(document, "ch_move_validation") and document.ch_move_validation: 
-                    if [row, col] in document.ch_moving_figure.get_valid_moves(): 
+                    source = document.ch_current_coord
+                    destination = [row, col]
+                    ch = doc.ch_board
+                    result = ch.move(source, destination) 
+                    if result: 
                         valid = True
-                        # castlings - king moving two squares towards a rook
-                        source = document.ch_current_coord
-                        destination = [row, col]
-                        sour_figure = document.ch_moving_figure
-                        if sour_figure.shortcut in "Kk" and abs(source[1] - destination[1]) == 2: 
-                            castling = True
-                            # appropriate rook move
-                            if destination[1] > source[1]: 
-                                rook = doc.ch_board.figures[source[0]][7][-1]
-                                rook.move_to(source[0], 5)
-                            else: 
-                                rook = doc.ch_board.figures[source[0]][0][-1]
-                                rook.move_to(source[0], 3)
-                        # remove oponent's figure
-                        if document.ch_board.figures[row][col]: 
-                            document.ch_board.figures[row][col][-1].remove()
-                        #document.ch_last_color = "w" if document.ch_moving_figure.shortcut.isupper() else "b"
-                        document.ch_board.last_color = "w" if document.ch_moving_figure.shortcut.isupper() else "b"
+                        #sour_figure = doc.ch_board.figures[source[0]][source[1]][-1]
+                        if len(ch.moves[-1]) > 2 and "x" in ch.moves[-1][-1]:
+                            dest_figure = ch.figures[destination[0]][destination[1]][-1]
+                            dest_figure.remove()
+                        #sour_figure.move_to(destination)
+                        if len(result) > 1: 
+                            # additional move
+                            source = result[1][0]
+                            destination = result[1][1]
+                            sour_figure = doc.ch_board.figures[source[0]][source[1]][-1]
+                            sour_figure.move_to(destination)
                     else: 
                         # move reset
                         valid = False
@@ -179,7 +169,7 @@ def deselect_element(evt):
                     else: 
                         document.ch_board.moves.insert(-1, [document.ch_current_coord, [row, col]])
                 document.ch_board.figures[row][col].append(document.ch_moving_figure)
-                document.ch_board.chessboard[row][col] = document.ch_moving_figure.shortcut
+                #document.ch_board.chessboard[row][col] = document.ch_moving_figure.shortcut
                 document.ch_moving_figure.row = row
                 document.ch_moving_figure.col = col
             else:
@@ -217,15 +207,11 @@ class ChessFigure:
             oldrow = self.row
             oldcol = self.col
             self.chessboard.figures[self.row][self.col].remove(self)
-            self.chessboard.chessboard[self.row][self.col] = ""
             self.row = row
             self.col = col
             self.chessboard.figures[self.row][self.col].append(self)
             self.moves.append([row, col])
-            self.chessboard.chessboard[self.row][self.col] = self.shortcut
-            self.chessboard.moves.append([[oldrow, oldcol], [row, col]])
             # last_color
-            self.chessboard.last_color = "w" if self.shortcut.isupper() else "b"
             if self.svg_image:
                 # redisplay svg
                 m = self.svg_image.getAttribute("transform")
@@ -237,11 +223,11 @@ class ChessFigure:
     
     def remove(self): 
         board = self.chessboard
-        board.trash.append(self)
+        board.figures_trash.append(self)
         self.svg_image.remove()
         #self.chessboard = None
         board.figures[self.row][self.col].remove(self)
-        board.chessboard[self.row][self.col] = ""
+        #board.chessboard[self.row][self.col] = ""
 
     def get_valid_moves(self): 
         return self.chessboard.get_valid_moves(self.row, self.col, self.shortcut)
@@ -300,7 +286,7 @@ class Board(Chessboard):
     def __init__(self, *args, **kwargs):
         super(Board, self).__init__(*args, **kwargs)
         self.figures = [[[] for col in range(len(self.chessboard[row]))] for row in range(len(self.chessboard))]
-        self.trash = []
+        self.figures_trash = []
 
     def add_figure(self, figure="P", row=0, col=0):
         new_figure = ChessFigure(figure)
@@ -333,7 +319,6 @@ class Board(Chessboard):
         for row in range(len(chessboard)):
             for col in range(len(chessboard[row])):
                 if chessboard[row][col] and ch[row][col]:
-                    self.chessboard[row][col] = ""
                     if top_only:
                         ch[row][col][-1].svg_image.remove()
                         ch[row][col][-1].chessboard = None
@@ -361,7 +346,11 @@ class Board(Chessboard):
                 if col: 
                     self.add_figure(col, ri, ci)
 
-            
+    def refresh_figures(self): 
+        chboard = [[col for col in row] for row in self.chessboard]
+        self.remove_figures()
+        self.add_figures_from_board(chboard)
+                    
 
 """
 def get_valid_moves(figure):
