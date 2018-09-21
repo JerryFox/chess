@@ -222,11 +222,10 @@ doc['run'].bind('click',editor.run)
                     <select id="open-select">
                     </select>
                     <button id="load-from">&nbsp;LoadFrom&nbsp;</button>
-                    <input id="code-url" type="text" name="code-url"
-                        value="http://vysoky.pythonanywhere.com/chessboard/static/walk.py" size="20">
+                    <input id="code-url" type="text" name="code-url" value="walk.py" size="20">
     	        </div>
-    		    <div id="editor"></div>
-    	    </div>
+                <div id="editor"></div>
+            </div>
 
         <script type="text/python3">
             from browser import window
@@ -245,11 +244,13 @@ class Chessboard:
         self.position = position
         self.chessboard = self.get_chessboard()
         self.moves = []
+        self.rec_moves = [] 
         self.last_color = None
         self.move_validation = True
         self.trash = []
         self.move_counter = 0
         self.initial_position = self.position
+        self.play_mode = None 
 
     def get_chessboard(self):
         position = packed_to_unpacked_position(self.position)

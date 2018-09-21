@@ -34,6 +34,9 @@ def play(moves, move_idx_from=0, number_of_moves=None):
 def back(): 
     """ back for one move """
     ch = doc.ch_board
+    if ch.play_mode == "play": 
+        ch.rec_moves = [list(item) for item in ch.moves]
+        ch.play_mode = "replay"
     if ch.moves: 
         last_move = ch.moves[-1]
         (l_sour, l_dest) = last_move[:2]
@@ -72,64 +75,47 @@ def back():
     
     
     
-ch = doc.ch_board
-ch.position = "base"
-ch.chessboard = ch.get_chessboard()
-ch.refresh_figures()
-ch.last_color = ""
-ch.trash = []
-ch.figures_trash = []
-ch.moves = []
-
-"""
-ind = back()
-print(ind)
-while type(ind) == int: 
-    ind = play(moves, ind, 1)
-
-ind = back()
-while ind: 
-    ind = back()
-"""
-
-ch.move_counter = 0
-ch.idtimer = None
-ch.rec_moves = moves
-ch.timer_interval = 1000
-
 def go(evt=None): 
-    if ch.move_counter < len(ch.rec_moves): 
+    ch = doc.ch_board
+    if ch.move_counter < len(ch.rec_moves) and ch.play_mode == "replay": 
         ch.move_counter = play(ch.rec_moves, ch.move_counter, 1)
         ch.idtimer = timer.set_timeout(go, ch.timer_interval)
 
 def go_back(evt=None): 
+    ch = doc.ch_board
     if ch.move_counter > 0: 
         ch.move_counter = back()
         ch.idtimer = timer.set_timeout(go_back, ch.timer_interval)
         
 def stop(evt=None):
+    ch = doc.ch_board
     timer.clear_timeout(ch.idtimer)
     ch.idtimer = None
     
 def go_end(evt=None): 
-    while ch.move_counter < len(ch.rec_moves): 
+    ch = doc.ch_board
+    while ch.move_counter < len(ch.rec_moves) and ch.play_mode == "replay": 
         ch.move_counter = play(ch.rec_moves, ch.move_counter, 1)
 
 def go_step(evt=None): 
-    if ch.move_counter < len(ch.rec_moves): 
+    ch = doc.ch_board
+    if ch.move_counter < len(ch.rec_moves) and ch.play_mode == "replay": 
         ch.move_counter = play(ch.rec_moves, ch.move_counter, 1)
 
 def go_back_end(evt=None): 
+    ch = doc.ch_board
     while ch.move_counter > 0: 
         ch.move_counter = back()
 
 def go_back_step(evt=None): 
+    ch = doc.ch_board
     ch.move_counter = back()
 
-bgo = doc["but-test"]
-parent = bgo.parentNode
-br = bgo.nextSibling
-parent.removeChild(bgo)
+if doc.getElementById("but-test"):
+    bgo = doc["but-test"]
+    parent = bgo.parentNode
+    br = bgo.nextSibling
+    parent.removeChild(bgo)
 
 if doc.getElementById("import-module"): 
     inp_box = doc["import-module"]
@@ -184,5 +170,20 @@ if not doc.getElementById("but-go-end"):
     but.bind("click", go_end)
     parent.insertBefore(but, br)
     
+def init(): 
+    ch = doc.ch_board
+    ch.position = "base"
+    ch.chessboard = ch.get_chessboard()
+    ch.refresh_figures()
+    ch.last_color = ""
+    ch.trash = []
+    ch.figures_trash = []
+    ch.moves = []
+    
+    ch.move_counter = 0
+    ch.idtimer = None
+    ch.rec_moves = moves
+    ch.timer_interval = 1000
 
+init()
 

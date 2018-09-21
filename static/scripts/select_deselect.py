@@ -144,6 +144,7 @@ def deselect_element(evt):
                     result = ch.move(source, destination) 
                     if result: 
                         valid = True
+                        ch.play_mode = "play"
                         #sour_figure = doc.ch_board.figures[source[0]][source[1]][-1]
                         if len(ch.moves[-1]) > 2 and "x" in ch.moves[-1][-1]:
                             dest_figure = ch.figures[destination[0]][destination[1]][-1]
@@ -164,10 +165,12 @@ def deselect_element(evt):
                         sel_elem.setAttribute("transform", "matrix ({})".format(" ".join(m)))
                 if [row, col] != document.ch_current_coord: 
                     document.ch_moving_figure.moves.append([row, col])
+                    """
                     if not castling: 
                         document.ch_board.moves.append([document.ch_current_coord, [row, col]])
                     else: 
                         document.ch_board.moves.insert(-1, [document.ch_current_coord, [row, col]])
+                    """
                 document.ch_board.figures[row][col].append(document.ch_moving_figure)
                 #document.ch_board.chessboard[row][col] = document.ch_moving_figure.shortcut
                 document.ch_moving_figure.row = row
@@ -287,6 +290,8 @@ class Board(Chessboard):
         super(Board, self).__init__(*args, **kwargs)
         self.figures = [[[] for col in range(len(self.chessboard[row]))] for row in range(len(self.chessboard))]
         self.figures_trash = []
+        self.timer_interval = 1000
+        self.idtimer = None
 
     def add_figure(self, figure="P", row=0, col=0):
         new_figure = ChessFigure(figure)
@@ -351,97 +356,6 @@ class Board(Chessboard):
         self.remove_figures()
         self.add_figures_from_board(chboard)
                     
-
-"""
-def get_valid_moves(figure):
-    shortcut = figure.shortcut
-    row = figure.row
-    col = figure.col
-    chessboard = figure.chessboard
-    valid_moves = []
-    if hasattr(doc, "ch_move_validation") and doc.ch_move_validation \
-        and hasattr(doc, "ch_last_color") and ((doc.ch_last_color == "w" and \
-        shortcut.isupper()) or (doc.ch_last_color == "b" and shortcut.islower())): 
-        return valid_moves
-    if shortcut.upper() == "N":
-        pos_moves = [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2]]
-        valid_moves = []
-        for move in pos_moves:
-            new_row = row + move[0]
-            new_col = col + move[1]
-            figure_on_destination = None
-            if new_row in range(8) and new_col in range(8):
-                if chessboard.figures[new_row][new_col]:
-                    figure_on_destination = chessboard.figures[new_row][new_col][-1]
-                if not figure_on_destination or figure_on_destination.shortcut.isupper() != \
-                    shortcut.isupper():
-                    valid_moves.append([new_row, new_col])
-    elif shortcut.upper() == "P": 
-        valid_moves = []
-        new_row1 = None
-        if shortcut == "P": 
-            new_row = row - 1
-            if row == 6: 
-                new_row1 = row - 2
-        else:
-            new_row = row + 1
-            if row == 1: 
-                new_row1 = row + 2
-        if new_row in range(8) and not chessboard.figures[new_row][col]: 
-            valid_moves.append([new_row, col])
-            if new_row1 and not chessboard.figures[new_row1][col]: 
-                valid_moves.append([new_row1, col])
-        for shift in [-1, 1]: 
-            new_col = col + shift
-            if new_row in range(8) and new_col in range(8): 
-                figure_on_destination = chessboard.figures[new_row][new_col]
-                if  figure_on_destination and figure_on_destination[-1].shortcut.isupper() != \
-                    shortcut.isupper():
-                    valid_moves.append([new_row, new_col])
-    elif shortcut.upper() in "QK":
-        directions = [[1, 0], [1, 1], [0, 1], [1, -1]]
-        coefs = []
-        if shortcut.upper() == "Q":
-            coefs = [[-row - 1, 8 - row], [-min(row, col) - 1, 8 - max(row, col)], \
-                [-col - 1, 8 - col], [max(-row - 1, col - 8), min(8 - row, col + 1)]] 
-        else: 
-            coefs = [[max(-row - 1, -2), min(8 - row, 2)], \
-                [max(-min(row, col) - 1, -2), min(8 - max(row, col),2)], \
-                [max(-col - 1, -2), min(8 - col, 2)], \
-                [max(max(-row - 1, col - 8), -2), min(min(8 - row, col + 1), 2)]]
-            # castlings - king moving from original position two squares towards a rook
-            if col == 4 and not figure.moves: 
-                if not chessboard.figures[row][col + 1] and not chessboard.figures[row][col + 2] \
-                    and chessboard.figures[row][col + 3] and not chessboard.figures[row][col + 3][-1].moves: 
-                    valid_moves.append([row, col + 2])
-                if not chessboard.figures[row][col - 1] and not chessboard.figures[row][col - 2] \
-                    and not chessboard.figures[row][col - 3] \
-                    and chessboard.figures[row][col - 4] and not chessboard.figures[row][col - 4][-1].moves: 
-                    valid_moves.append([row, col - 2])
-    elif shortcut.upper() == "B":
-        directions = [[1, 1], [1, -1]]
-        coefs = [[-min(row, col) - 1, 8 - max(row, col)], [max(-row - 1, col - 8), min(8 - row, col + 1)]]
-    elif shortcut.upper() == "R":
-        directions = [[1, 0], [0, 1]]
-        coefs = [[-row - 1, 8 - row], [-col - 1, 8 - col]]
-    if shortcut.upper() in "QKBR" and coefs: 
-        for index, direction in enumerate(directions): 
-            #for coef in range(coefs[index][0], coefs[index][1]): 
-            for (ifrom, ito, istep) in ((-1, coefs[index][0], -1), (1, coefs[index][1], 1)):
-                for coef in range(ifrom, ito, istep): 
-                    new_row = row + coef * direction[0]
-                    new_col = col + coef * direction[1]
-                    #if coef != 0: 
-                    figure_on_destination = chessboard.figures[new_row][new_col]
-                    if  figure_on_destination:
-                        if figure_on_destination[-1].shortcut.isupper() != \
-                            shortcut.isupper():
-                            valid_moves.append([new_row, new_col])
-                        break
-                    else: 
-                        valid_moves.append([new_row, new_col])
-    return valid_moves
-"""
 
 def get_knight_moves(row, col):
     """chess - knight moves
