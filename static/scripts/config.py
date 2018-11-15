@@ -1,6 +1,9 @@
-"""
-INTER_PATH = "/python/vysokyjar"
-"""
+# INTER_PATH = "/python/vysokyjar"  # kraken
+INTER_PATH = ""
 
-from hiddenconfig import *
+try:
+    from hiddenconfig import *
+except ImportError:
+    pass
+
 
