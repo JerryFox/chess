@@ -7,27 +7,27 @@ import os, os.path, sys
 
 # temporary due to kraken
 ipath = "/home/vysokyjar/venv/mysql/lib/python3.6/site-packages"
-if not ipath in sys.path: 
+if not ipath in sys.path:
     sys.path.append(ipath)
 # temporary - end
 
-# destroy old imports due to kraken 
-if "chess" in sys.modules: 
+# destroy old imports due to kraken
+if "chess" in sys.modules:
     del sys.modules["chess"]
-if "hiddenconfig" in sys.modules: 
+if "hiddenconfig" in sys.modules:
     del sys.modules["hiddenconfig"]
-if "bottle" in sys.modules: 
+if "bottle" in sys.modules:
     del sys.modules["bottle"]
 # destroy - end
 
-from bottle import default_app, route, static_file, request, abort
+from bottle import default_app, route, static_file, request, abort, template
 
 #import chess_exercise01 as chess
 import chess
 import MySQLdb, json
 
 from hiddenconfig import PROJECT_DIRECTORY, CHESS_IMG_FOLDER, SCRIPT_FOLDER, CSS_FOLDER, ROOT, PATH_PREFIX, INTER_PATH, SHOW_HIDDEN
-from hiddenconfig import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME
+from hiddenconfig import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME, TEMPLATE_FOLDER
 
 """
 PROJECT_DIRECTORY = "/home/vysoky/projects/chess"
@@ -120,9 +120,22 @@ def chessboard(position="base"):
     else:
         zoom = "600px"
     ch = chess.Chessboard(position)
-    return ch.get_html(zoom=zoom)
+    context = {
+        "script_folder": "/static/scripts/",
+        "css_folder": "/static/css/",
+        "img_folder": "/static/images/",
+        "zoom": zoom,
+        "chessboard": ch.chessboard,
+        "position": ch.position,
+        "packed_position": ch.get_packed_position(),
+        }
+    return template(PROJECT_DIRECTORY + "/views/" + "base", context)
 
 def listdir_nohidden(path):
+    """
+    directory content without hidden files
+    (files with 'hidden' prefix in filenames)
+    """
     for f in os.listdir(path):
         if not f.startswith('hidden'):
             yield f
@@ -132,9 +145,9 @@ def listdir_nohidden(path):
 def server_static(filepath="/"):
     ipath = ROOT + filepath
     if os.path.isdir(ipath):
-        if SHOW_HIDDEN: 
+        if SHOW_HIDDEN:
             list_dir = os.listdir(ipath)
-        else: 
+        else:
             list_dir = listdir_nohidden(ipath)
         html_template = """
 <html>
@@ -167,12 +180,12 @@ def server_static(filepath="/"):
         for item in list_isfile:
             iclass = "file" if item[0] else "folder"
             line = '<li class="{}"><a href="{}">{}</a></li>\n'
-            items += line.format(iclass,INTER_PATH + PATH_PREFIX + os.path.join(filepath, item[1]), item[1]) 
+            items += line.format(iclass,INTER_PATH + PATH_PREFIX + os.path.join(filepath, item[1]), item[1])
         return html_template.format(path=filepath, items=items)
     else:
-        if SHOW_HIDDEN or not os.path.basename(filepath).startswith("hidden"): 
+        if SHOW_HIDDEN or not os.path.basename(filepath).startswith("hidden"):
             return static_file(filepath, root=ROOT)
-        else: 
+        else:
             return "I can't it show..."
 
 application = default_app()

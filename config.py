@@ -1,5 +1,6 @@
-""" configuration for chess application 
-    hiddenconfig.py is valid name for configuration file """
+""" configuration for chess application
+    hiddenconfig.py is valid name for configuration file
+"""
 
 """
 PROJECT_DIRECTORY = "/home/vysoky/projects/chess"
@@ -9,6 +10,7 @@ SHOW_HIDDEN = False # items with "hidden" prefix
 CHESS_IMG_FOLDER = "/static/images/"
 SCRIPT_FOLDER = "/static/scripts/"
 CSS_FOLDER = "/static/css/"
+TEMPLATE_FOLDER = "/templates/"
 
 ROOT = HOME_DIRECTORY           # where are files serving from
 PATH_PREFIX = "/files"          # path prefix in browser
