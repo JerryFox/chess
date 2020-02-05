@@ -61,7 +61,7 @@ doc['run'].bind('click',editor.run)
 
 
             <div id="chess-container" class="gr-chessboard">
-%#{{insert_html}}
+
 <svg id="chessboard" class="chessboard" viewBox="0 0 1007 810"
 version="1.1" width="{{zoom}}" xmlns="http://www.w3.org/2000/svg"
 style="overflow: hidden; position: relative;">
@@ -86,7 +86,7 @@ chessboard position string:
 {{position}}
 {{packed_position}}
 -->
-<image x="0" y="0" width="810" height="810" preserveAspectRatio="xMinYMin" \
+<image x="0" y="0" width="810" height="810" preserveAspectRatio="xMinYMin"
     xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{{img_folder}}Chess_Board_01.svg"
     style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
 </image>
