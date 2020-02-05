@@ -1,3 +1,5 @@
+# exercise file for chess_exercise01.ipynb
+
 FIGURES = "RNBKQBNRPrnbkqbnrp"
 CHESS_IMG_FOLDER = "static/images/"
 

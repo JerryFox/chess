@@ -1,5 +1,6 @@
-""" configuration for chess application
-    hiddenconfig.py is valid name for configuration file
+"""
+configuration for chess application
+valid configuration in hiddenconfig.py
 """
 
 PROJECT_DIRECTORY = "/home/vysoky/projects/chess"

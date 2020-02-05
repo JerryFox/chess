@@ -1,6 +1,5 @@
-# files serving with directory list
 # simple bottle application
-
+# files serving with directory list
 # chess exercise application for seminar
 
 import os, os.path, sys
