@@ -26,8 +26,8 @@ from bottle import default_app, route, static_file, request, abort, template
 import chess
 import MySQLdb, json
 
-from hiddenconfig import PROJECT_DIRECTORY, CHESS_IMG_FOLDER, SCRIPT_FOLDER, CSS_FOLDER, ROOT, PATH_PREFIX, INTER_PATH, SHOW_HIDDEN
-from hiddenconfig import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME, TEMPLATE_FOLDER
+from config import PROJECT_DIRECTORY, CHESS_IMG_FOLDER, SCRIPT_FOLDER, CSS_FOLDER, ROOT, PATH_PREFIX, INTER_PATH, SHOW_HIDDEN
+from config import DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME, TEMPLATE_FOLDER
 
 """
 PROJECT_DIRECTORY = "/home/vysoky/projects/chess"
