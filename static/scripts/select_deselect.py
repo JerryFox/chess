@@ -1,3 +1,8 @@
+"""
+select_deselect.py
+brython script
+"""
+
 from browser import document
 from browser import document as doc
 #from chess_brython import Chess_figure
@@ -5,35 +10,35 @@ from chess import Chessboard
 from browser import document as doc, timer, alert
 from random import choice
 
-def kb_move(move, color): 
+def kb_move(move, color):
     """knight base move"""
     pass
 
-def move(source, destination=None, add=None): 
+def move(source, destination=None, add=None):
     """move figure from source to destination
     """
-    if destination is None: 
+    if destination is None:
         # coordinates are in list
         destination = source[1]
         source = source[0]
     items = [source, destination]
-    for index, item in enumerate(items): 
-        if type(item) == str: 
-            col = ord(item[0].lower()) - ord("a") 
+    for index, item in enumerate(items):
+        if type(item) == str:
+            col = ord(item[0].lower()) - ord("a")
             row = 8 - int(item[1])
             items[index] = [row, col]
     [source, destination] = items
     sour_figure = None
     dest_figure = None
     ch = doc.ch_board
-    result = ch.move(source, destination) 
-    if result: 
+    result = ch.move(source, destination)
+    if result:
         sour_figure = doc.ch_board.figures[source[0]][source[1]][-1]
         if len(ch.moves[-1]) > 2 and "x" in ch.moves[-1][-1]:
             dest_figure = doc.ch_board.figures[destination[0]][destination[1]][-1]
             dest_figure.remove()
         sour_figure.move_to(destination)
-        if len(result) > 1: 
+        if len(result) > 1:
             # additional move
             source = result[1][0]
             destination = result[1][1]
@@ -41,7 +46,7 @@ def move(source, destination=None, add=None):
             sour_figure.move_to(destination)
     return (sour_figure, dest_figure)
 
-def add_target(x, y): 
+def add_target(x, y):
     """target = cell rounded with green rectangle
     shown / hidden by click + SHIFT"""
     cursor = document["cursor"]
@@ -56,19 +61,23 @@ def add_target(x, y):
     clone.setAttribute("height", "90")
     clone.setAttribute("transform", "matrix(1 0 0 1 10 10)")
     cursor.insertAdjacentElement('beforebegin', clone)
-    
-def set_targets_from_moves(moves): 
+
+def set_targets_from_moves(moves):
     """ targets list of rows and columns"""
     remove_targets()
-    for target in moves: 
+    for target in moves:
         add_target(target[1] * 100, target[0] * 100)
-        
-def remove_targets(): 
+
+def remove_targets():
     targets = doc.get(selector="rect.targets")
-    for target in targets: 
+    for target in targets:
         target.remove()
-        
+
 def select_element(evt):
+    """
+    selecting movable element
+    on the mouse down
+    """
     document.ch_moving_figure = None
     evt.preventDefault()
     selected_element = evt.target
@@ -92,13 +101,13 @@ def select_element(evt):
         document.ch_board.figures[document.coord[0]][document.coord[1]].remove(document.ch_moving_figure)
         document.ch_current_coord = document.coord
         #document.ch_move_validation = True
-        if hasattr(document, "ch_move_validation") and document.ch_move_validation: 
+        if hasattr(document, "ch_move_validation") and document.ch_move_validation:
             remove_targets()
             row = document.coord[0]
             col = document.coord[1]
             figure = document.ch_moving_figure
             set_targets_from_moves(figure.get_valid_moves())
-                
+
     # move selected figure on top
     document.querySelector('.figures').insertAdjacentElement('beforeend',selected_element)
     # save variables to document
@@ -113,6 +122,10 @@ def select_element(evt):
     selected_element.bind("mouseup", deselect_element)
 
 def deselect_element(evt):
+    """
+    unselecting movable element
+    on the mouse up
+    """
     if document.ch_selected_element:
         sel_elem = document.ch_selected_element
         sel_elem.classList.remove("source")
@@ -137,12 +150,12 @@ def deselect_element(evt):
             if document.ch_moving_figure:
                 castling = False
                 # move validation
-                if hasattr(document, "ch_move_validation") and document.ch_move_validation: 
+                if hasattr(document, "ch_move_validation") and document.ch_move_validation:
                     source = document.ch_current_coord
                     destination = [row, col]
                     ch = doc.ch_board
-                    result = ch.move(source, destination) 
-                    if result: 
+                    result = ch.move(source, destination)
+                    if result:
                         valid = True
                         ch.play_mode = "play"
                         #sour_figure = doc.ch_board.figures[source[0]][source[1]][-1]
@@ -150,25 +163,25 @@ def deselect_element(evt):
                             dest_figure = ch.figures[destination[0]][destination[1]][-1]
                             dest_figure.remove()
                         #sour_figure.move_to(destination)
-                        if len(result) > 1: 
+                        if len(result) > 1:
                             # additional move
                             source = result[1][0]
                             destination = result[1][1]
                             sour_figure = doc.ch_board.figures[source[0]][source[1]][-1]
                             sour_figure.move_to(destination)
-                    else: 
+                    else:
                         # move reset
                         valid = False
                         (row, col) = document.ch_current_coord
                         cm = document.ch_current_matrix
                         m = [str(i) for i in cm]
                         sel_elem.setAttribute("transform", "matrix ({})".format(" ".join(m)))
-                if [row, col] != document.ch_current_coord: 
+                if [row, col] != document.ch_current_coord:
                     document.ch_moving_figure.moves.append([row, col])
                     """
-                    if not castling: 
+                    if not castling:
                         document.ch_board.moves.append([document.ch_current_coord, [row, col]])
-                    else: 
+                    else:
                         document.ch_board.moves.insert(-1, [document.ch_current_coord, [row, col]])
                     """
                 document.ch_board.figures[row][col].append(document.ch_moving_figure)
@@ -203,7 +216,7 @@ class ChessFigure:
         chessboard.chessboard[self.row][self.col] = self.shortcut
 
     def move_to(self, row, col=None):
-        if col is None: 
+        if col is None:
             col = row[1]
             row = row[0]
         if row in range(len(self.chessboard.chessboard)) and col in range(len(self.chessboard.chessboard[row])):
@@ -223,8 +236,8 @@ class ChessFigure:
                 m[5] = str(int(float(m[5])) + 100 * (row - oldrow))
                 self.svg_image.setAttribute("transform", "matrix(" + " ".join(m) + ")")
                 doc.querySelector('.figures').insertAdjacentElement('beforeend',self.svg_image)
-    
-    def remove(self): 
+
+    def remove(self):
         board = self.chessboard
         board.figures_trash.append(self)
         self.svg_image.remove()
@@ -232,7 +245,7 @@ class ChessFigure:
         board.figures[self.row][self.col].remove(self)
         #board.chessboard[self.row][self.col] = ""
 
-    def get_valid_moves(self): 
+    def get_valid_moves(self):
         return self.chessboard.get_valid_moves(self.row, self.col, self.shortcut)
 
     def go(self):
@@ -294,6 +307,9 @@ class Board(Chessboard):
         self.idtimer = None
 
     def add_figure(self, figure="P", row=0, col=0):
+        """
+        add new figure on the top
+        """
         new_figure = ChessFigure(figure)
         """
         if not doc.ch_board:
@@ -318,6 +334,10 @@ class Board(Chessboard):
         return new_figure
 
     def remove_figures(self, chessboard=None, top_only=False):
+        """
+        remove top figures or all figures
+        chessboard - delete mask
+        """
         if not chessboard:
             chessboard = [["x" for col in range(8)] for row in range(8)]
         ch = self.figures
@@ -328,34 +348,45 @@ class Board(Chessboard):
                         ch[row][col][-1].svg_image.remove()
                         ch[row][col][-1].chessboard = None
                         ch[row][col].remove(ch[row][col][-1])
-                    else: 
-                        for img in ch[row][col]: 
+                    else:
+                        for img in ch[row][col]:
                             img.svg_image.remove()
                             img.chessboard = None
                         ch[row][col] = []
+                    if not ch[row][col]:
+                        self.chessboard[row][col] = ""
+                    else:
+                        self.chessboard[row][col] = ch[row][col][-1].shortcut
 
     def remove_figure(self, row, col=None):
-        if col is None: 
+        """
+        remove bottom figure from the cell
+        """
+        if col is None:
             col = row[1]
             row = row[0]
         if self.figures[row][col]:
             self.figures[row][col][0].svg_image.remove()
             self.figures[row][col][0].chessboard = None
             self.figures[row][col].remove(self.figures[row][col][0])
-            
-    def add_figures_from_board(self, chessboard=None): 
-        if chessboard is None: 
+            if not self.figures[row][col]:
+                self.chessboard[row][col] = ""
+            else:
+                self.chessboard[row][col] = self.figures[row][col][-1].shortcut
+
+    def add_figures_from_board(self, chessboard=None):
+        if chessboard is None:
             chessboard = Chessboard().chessboard
         for ri, row in enumerate(chessboard):
-            for ci, col in enumerate(row): 
-                if col: 
+            for ci, col in enumerate(row):
+                if col:
                     self.add_figure(col, ri, ci)
 
-    def refresh_figures(self): 
+    def refresh_figures(self):
         chboard = [[col for col in row] for row in self.chessboard]
         self.remove_figures()
         self.add_figures_from_board(chboard)
-                    
+
 
 def get_knight_moves(row, col):
     """chess - knight moves

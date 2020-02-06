@@ -1,7 +1,13 @@
+"""
+walk.py
+brython training script
+"""
+
 from browser import timer, document as doc
 from random import choice, randint
 from labels import remove_labels, show_labels, add_label
 
+# one possible circle knight walk path
 CIRCLE_KNIGHT_WALK = [
     [15, 12, 37, 34, 17, 2, 39, 0],
     [36, 33, 16, 13, 38, 63, 18, 3],
@@ -14,31 +20,43 @@ CIRCLE_KNIGHT_WALK = [
     ]
 
 def gen_figures():
+    """
+    generator example
+    (figures generation)
+    """
     figures = ["R", "N", "B", "K", "q", "b", "n", "r"]
     for row in range(8):
         for col in range(8):
             doc.ch_board.add_figure(figures[col], row, col)
             yield (row, col)
 
-def gen():
+def gen(time=None):
+    """
+    using generator - test
+    """
+    if not time:
+        if "ch_time" in dir(doc):
+            time = doc.ch_time
+        else:
+            time = 3000
+    else:
+        doc.ch_time = time
+    if not "ch_g" in dir(doc) or not doc.ch_g:
+        doc.ch_g = gen_figures()
+        doc.ch_time = time
     dest = next(doc.ch_g)
     if dest != (7, 7):
         doc.ch_idtimer = timer.set_timeout(gen, doc.ch_time)
-
-def start(time=3000):
-    doc.ch_g = gen_figures()
-    doc.ch_time = time
-    gen()
+    else:
+        doc.ch_g = None
 
 def pause():
+    """
+    doc.ch_idtimer timer clear
+    (used in gen(), add_fig(), ...)
+    for continue simply type gen(), add_fig(), ... again
+    """
     timer.clear_timeout(doc.ch_idtimer)
-
-def cont():
-    gen()
-
-def step(n=1):
-    for i in range(n):
-        next(doc.ch_g)
 
 def go(evt=None):
     remove_labels()
@@ -58,13 +76,20 @@ def go(evt=None):
     return figure
 
 def run(fig="n"):
-    """ads and runs a knight"""
+    """
+    adds and runs a knight
+    to stop the figure use its stop() method
+    """
     f = doc.ch_board.add_figure(fig)
     f.timer_interval = 2000
     doc.my_figure = f
     f.go()
+    return f
 
 def knight_walk0(self, valid_moves):
+    """
+    the knight uses random move
+    """
     move = choice(valid_moves)
     # remove other figure
     if self.chessboard.figures[move[0]][move[1]]:
@@ -78,8 +103,11 @@ def knight_walk0(self, valid_moves):
     self.idtimer = timer.set_timeout(self.go, self.timer_interval)
 
 def knight_walk1(self, valid_moves):
-    # minimise distance from borders
-    #print(valid_moves)
+    """
+    the knight minimises distance from borders
+    this strategy is most successful
+    (depends on starting position)
+    """
     moves_dists = []
     for (index, move) in enumerate(valid_moves):
         dists = [move[0], move[1], 7 - move[0], 7 - move[1]]
@@ -101,11 +129,14 @@ def knight_walk1(self, valid_moves):
     self.idtimer = timer.set_timeout(self.go, self.timer_interval)
 
 def knight_walk2(self, valid_moves):
-    """walk around the circle path"""
+    """
+    the knight walks around the circle path
+    CIRCLE_KNIGHT_WALK defined globally
+    """
     actual_position = [self.row, self.col]
-    next_number = (CIRCLE_KNIGHT_WALK[self.row][self.col] + 1) % 64 
-    for move in valid_moves: 
-        if CIRCLE_KNIGHT_WALK[move[0]][move[1]] == next_number: 
+    next_number = (CIRCLE_KNIGHT_WALK[self.row][self.col] + 1) % 64
+    for move in valid_moves:
+        if CIRCLE_KNIGHT_WALK[move[0]][move[1]] == next_number:
             break
     # remove other figure
     if self.chessboard.figures[move[0]][move[1]]:
@@ -118,16 +149,17 @@ def knight_walk2(self, valid_moves):
     add_label(move[0], move[1], str(self.counter).zfill(2))
     self.idtimer = timer.set_timeout(self.go, self.timer_interval)
 
-def test():
-    pass
-
 def add_fig(fig=None):
-    """figure adding on random position"""
-    if fig: 
+    """
+    figure adding on a random position
+    loop due to timer
+    to stop use pause() function
+    """
+    if fig:
         doc.ch_adding_figure = fig
-    try: 
+    try:
         fig = doc.ch_adding_figure
-    except: 
+    except:
         doc.ch_adding_figure = "P"
     doc.ch_time = 2000
     where = randint(0, 63)
@@ -140,9 +172,11 @@ doc["import-module"].value = "knight_walk1"
 doc["but-test"].unbind("click")
 doc["but-test"].bind("click", go)
 
-if hasattr(doc, "ch_selector") and doc.ch_selector: 
+
+# top figure under selector into f variable
+if hasattr(doc, "ch_selector") and doc.ch_selector:
     (row, col) = doc.ch_selector
-    if doc.ch_board.figures[row][col]: 
+    if doc.ch_board.figures[row][col]:
         f = doc.ch_board.figures[row][col][-1]
 
 

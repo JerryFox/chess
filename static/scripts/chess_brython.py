@@ -1,3 +1,8 @@
+"""
+initial brython script
+started from html
+"""
+
 from browser import document, alert, window
 from chess import Chessboard
 from http import cookies
@@ -29,7 +34,7 @@ def click_on_chessboard(evt):
         document["selector"].setAttribute("x", x)
         document["selector"].setAttribute("y", y)
         document.ch_selector = [int(y) // 100, int(x) // 100]
-        
+
 def move_over_chessboard(evt):
     document["coordinates"].text = "x:{} y:{}".format(evt.x, evt.y)
     bound_rect = document["chessboard"].getBoundingClientRect()

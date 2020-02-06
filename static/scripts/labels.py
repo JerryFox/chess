@@ -1,3 +1,9 @@
+"""
+labels.py
+brython script
+working with labels in cells
+"""
+
 from browser import document as doc
 
 LABEL = """\

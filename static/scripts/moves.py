@@ -1,9 +1,18 @@
+"""
+moves.py
+brython script
+"""
+
 from select_deselect import select_element
 from select_deselect import Board, ChessFigure
 from browser import document as doc
 
 
 def get_chessboard():
+    """
+    creates chessboard object from DOM
+    usually called from initial script
+    """
     figures_count = 0
     on_board = 0
     chessboard = Board("blank")
