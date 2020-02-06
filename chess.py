@@ -33,40 +33,6 @@ def packed_to_unpacked_position(position="base"):
     unpacked_position = (unpacked_position + "-" * 64)[:64]
     return unpacked_position
 
-def get_img_name(shortcut):
-    """file name of figure shortcut's image
-    shortcuts:
-    RNBKQBNRP - dark figures (d)
-    rnbkqbnrp - light figures (l)
-    image name format example:
-    Chess_klt45.svg - white king
-    """
-    name = "Chess_{}{}t45.svg".format(shortcut.lower(),
-                                      "l" if shortcut.isupper() else "d")
-    return name
-
-def image_element_code(row, column, shortcut, beside=False):
-    image_template = """<image x="{}" y="{}" preserveAspectRatio="xMinYMin" xmlns:xlink="http://www.w3.org/1999/xlink"
-xlink:href="{}" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0); "
-width="80" height="80"
-class="chess-figure draggable{}"
-transform="matrix(1 0 0 1 0 0)"
-onmousedown="if (event.preventDefault) event.preventDefault()"
-></image>"""
-    return image_template.format(15 + column * 100, 13 + row * 100,
-                       CHESS_IMG_FOLDER + get_img_name(shortcut), " source" if beside else "")
-
-def beside_figures_images():
-    # images beside chessboard (for adding on chessboard)
-    add_board = [["k", "q"], ["r", "b"], ["n", "p"], ["", ""], ["", ""],
-                 ["K", "Q"], ["R", "B"], ["N", "P"]]
-    images = ""
-    for row in range(len(add_board)):
-        for column in range(len(add_board[0])):
-            if add_board[row][column]:
-                images += image_element_code(row, column + 8, add_board[row][column], True) + "\n"
-    return images
-
 class Chessboard:
 
     def __init__(self, position="base"):
