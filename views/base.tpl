@@ -107,18 +107,38 @@ chessboard position string:
 <g class="figures">
 <%
 images = ""
-from chess import image_element_code, beside_figures_images
+from config import PROJECT_DIRECTORY
 for row in range(len(chessboard)):
     for column in range(len(chessboard[0])):
-        if chessboard[row][column]:
-            images += image_element_code(row, column, chessboard[row][column]) + "\n"
+        shortcut = chessboard[row][column]
+        if shortcut:
+            #images += image_element_code(row, column, chessboard[row][column]) + "\n"
+            x = 15 + column * 100
+            y = 13 + row * 100
+            name = "Chess_{}{}t45.svg".format(shortcut.lower(), "l" if shortcut.isupper() else "d")
+            href = img_folder + name
+            beside = ""
+            include(PROJECT_DIRECTORY + "/views/" + "image_template", x=x, y=y, name=name, href=href, beside=beside)
         end
     end
 end
-beside_figures = beside_figures_images()
+add_board = [["k", "q"], ["r", "b"], ["n", "p"], ["", ""], ["", ""],
+             ["K", "Q"], ["R", "B"], ["N", "P"]]
+for row in range(len(add_board)):
+    for column in range(len(add_board[0])):
+        shortcut = add_board[row][column]
+        if shortcut:
+            x = 15 + (column + 8) * 100
+            y = 13 + row * 100
+            name = "Chess_{}{}t45.svg".format(shortcut.lower(), "l" if shortcut.isupper() else "d")
+            href = img_folder + name
+            beside = " source"
+            include(PROJECT_DIRECTORY + "/views/" + "image_template", x=x, y=y, name=name, href=href, beside=beside)
+        end
+    end
+end
+
 %>
-{{!images}}
-{{!beside_figures}}
 </g>
 </svg>
 
