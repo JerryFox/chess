@@ -3,9 +3,6 @@ select_deselect.py
 brython script
 """
 
-from browser import document
-from browser import document as doc
-#from chess_brython import Chess_figure
 from chess import Chessboard
 from browser import document as doc, timer, alert
 from random import choice
@@ -49,7 +46,7 @@ def move(source, destination=None, add=None):
 def add_target(x, y):
     """target = cell rounded with green rectangle
     shown / hidden by click + SHIFT"""
-    cursor = document["cursor"]
+    cursor = doc["cursor"]
     clone = cursor.cloneNode()
     clone.removeAttribute("id")
     clone.setAttribute("class", "targets")
@@ -78,10 +75,10 @@ def select_element(evt):
     selecting movable element
     on the mouse down
     """
-    document.ch_moving_figure = None
+    doc.ch_moving_figure = None
     evt.preventDefault()
     selected_element = evt.target
-    me = document.getElementById("moving")
+    me = doc.getElementById("moving")
     if me:
         me.removeAttribute("id")
     selected_element.setAttribute("id", "moving")
@@ -97,25 +94,25 @@ def select_element(evt):
         selected_element.insertAdjacentElement('beforebegin', clone)
         clone.bind("mousedown", select_element)
     else:
-        document.ch_moving_figure = document.ch_board.figures[document.coord[0]][document.coord[1]][-1]
-        document.ch_board.figures[document.coord[0]][document.coord[1]].remove(document.ch_moving_figure)
-        document.ch_current_coord = document.coord
-        #document.ch_move_validation = True
-        if hasattr(document, "ch_move_validation") and document.ch_move_validation:
+        doc.ch_moving_figure = doc.ch_board.figures[doc.coord[0]][doc.coord[1]][-1]
+        doc.ch_board.figures[doc.coord[0]][doc.coord[1]].remove(doc.ch_moving_figure)
+        doc.ch_current_coord = doc.coord
+        #doc.ch_move_validation = True
+        if hasattr(doc, "ch_move_validation") and doc.ch_move_validation:
             remove_targets()
-            row = document.coord[0]
-            col = document.coord[1]
-            figure = document.ch_moving_figure
+            row = doc.coord[0]
+            col = doc.coord[1]
+            figure = doc.ch_moving_figure
             set_targets_from_moves(figure.get_valid_moves())
 
     # move selected figure on top
-    document.querySelector('.figures').insertAdjacentElement('beforeend',selected_element)
+    doc.querySelector('.figures').insertAdjacentElement('beforeend',selected_element)
     # save variables to document
-    document.ch_current_x = evt.clientX
-    document.ch_current_y = evt.clientY
-    document.ch_selected_element = selected_element
-    document.ch_current_matrix = cm
-    # document.ch_zoom_chessboard = zoom_chessboard
+    doc.ch_current_x = evt.clientX
+    doc.ch_current_y = evt.clientY
+    doc.ch_selected_element = selected_element
+    doc.ch_current_matrix = cm
+    # doc.ch_zoom_chessboard = zoom_chessboard
     # events binding
     # selected_element.bind("mousemove", move_element)
     # selected_element.bind("mouseout", deselect_element);
@@ -126,37 +123,44 @@ def deselect_element(evt):
     unselecting movable element
     on the mouse up
     """
-    if document.ch_selected_element:
-        sel_elem = document.ch_selected_element
+    if doc.ch_selected_element:
+        sel_elem = doc.ch_selected_element
         sel_elem.classList.remove("source")
         cm = sel_elem.getAttribute("transform").split("(")[1].split(")")[0].split()
         cm = [int(float(i)) for i in cm]
-        #cm = document.ch_current_matrix
+        #cm = doc.ch_current_matrix
         cm[4] = 100 * (round(cm[4] / 100))
         cm[5] = 100 * (round(cm[5] / 100))
         row = (cm[5] + int(sel_elem.getAttribute("y"))) // 100
         col = (cm[4] + int(sel_elem.getAttribute("x"))) // 100
+        destination = [row, col]
         m = [str(i) for i in cm]
         sel_elem.setAttribute("transform", "matrix ({})".format(" ".join(m)))
         sel_elem.unbind("mousemove")
         sel_elem.unbind("mouseup")
         sel_elem.unbind("mouseout")
-        document.ch_selected_element = None
+        doc.ch_selected_element = None
         x = int(sel_elem.getAttribute("x"))
         x += cm[4]
+        source = doc.ch_current_coord
         if x > 810:
+            # remove figure
             sel_elem.remove()
+            # delete figure in chessboard
+            ch = doc.ch_board
+            shortcut = ""
+            if ch.figures[source[0]][source[1]]:
+                shortcut = ch.figures[source[0]][source[1]][-1].shortcut
+            ch.chessboard[source[0]][source[1]] = shortcut
         else:
-            if document.ch_moving_figure:
-                castling = False
+            if doc.ch_moving_figure:
+                #castling = False
                 # move validation
-                if hasattr(document, "ch_move_validation") and document.ch_move_validation:
-                    source = document.ch_current_coord
-                    destination = [row, col]
+                if hasattr(doc, "ch_move_validation") and doc.ch_move_validation:
                     ch = doc.ch_board
                     result = ch.move(source, destination)
                     if result:
-                        valid = True
+                        #valid = True
                         ch.play_mode = "play"
                         #sour_figure = doc.ch_board.figures[source[0]][source[1]][-1]
                         if len(ch.moves[-1]) > 2 and "x" in ch.moves[-1][-1]:
@@ -171,29 +175,37 @@ def deselect_element(evt):
                             sour_figure.move_to(destination)
                     else:
                         # move reset
-                        valid = False
-                        (row, col) = document.ch_current_coord
-                        cm = document.ch_current_matrix
+                        # valid = False
+                        (row, col) = doc.ch_current_coord
+                        cm = doc.ch_current_matrix
                         m = [str(i) for i in cm]
                         sel_elem.setAttribute("transform", "matrix ({})".format(" ".join(m)))
-                if [row, col] != document.ch_current_coord:
-                    document.ch_moving_figure.moves.append([row, col])
+                else:
+                    # not move validation
+                    ch = doc.ch_board
+                    ch.chessboard[destination[0]][destination[1]] = doc.ch_moving_figure.shortcut
+                    shortcut = ""
+                    if ch.figures[source[0]][source[1]]:
+                        shortcut = ch.figures[source[0]][source[1]][-1].shortcut
+                    ch.chessboard[source[0]][source[1]] = shortcut
+                if [row, col] != doc.ch_current_coord:
+                    doc.ch_moving_figure.moves.append([row, col])
                     """
                     if not castling:
-                        document.ch_board.moves.append([document.ch_current_coord, [row, col]])
+                        doc.ch_board.moves.append([doc.ch_current_coord, [row, col]])
                     else:
-                        document.ch_board.moves.insert(-1, [document.ch_current_coord, [row, col]])
+                        doc.ch_board.moves.insert(-1, [doc.ch_current_coord, [row, col]])
                     """
-                document.ch_board.figures[row][col].append(document.ch_moving_figure)
-                #document.ch_board.chessboard[row][col] = document.ch_moving_figure.shortcut
-                document.ch_moving_figure.row = row
-                document.ch_moving_figure.col = col
+                doc.ch_board.figures[row][col].append(doc.ch_moving_figure)
+                #doc.ch_board.chessboard[row][col] = doc.ch_moving_figure.shortcut
+                doc.ch_moving_figure.row = row
+                doc.ch_moving_figure.col = col
             else:
                 figure_file = sel_elem.getAttribute("xlink:href")
                 figure_shortcut = figure_file.split("_")[1][:2]
                 figure_shortcut = figure_shortcut[0] if figure_shortcut[1] == "d" else figure_shortcut[0].upper()
                 new_figure = ChessFigure(figure_shortcut, sel_elem, row, col)
-                new_figure.place_on_board(document.ch_board)
+                new_figure.place_on_board(doc.ch_board)
 
 class ChessFigure:
 
