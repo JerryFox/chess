@@ -51,7 +51,7 @@ doc['run'].bind('click',editor.run)
                 <button id="but-fig-count">count fig.</button>
                 <button id="but-go-to-position">goto pos.</button>
                 <button id="but-test">test</button>
-                <input id="import-module" type="text" name="import-module" value="walk" size="10"><br>
+                <input id="import-module" type="text" name="import-module" value="bx_walk" size="10"><br>
                 <button id="but-zoom-out">◀</button>
                 <span id="zoom-display"></span>
                 <button id="but-zoom-in">▶</button>
@@ -170,7 +170,7 @@ end
                     <select id="open-select">
                     </select>
                     <button id="load-from">&nbsp;LoadFrom&nbsp;</button>
-                    <input id="code-url" type="text" name="code-url" value="walk.py" size="20">
+                    <input id="code-url" type="text" name="code-url" value="bx_walk.py" size="20">
     	        </div>
                 <div id="editor"></div>
             </div>

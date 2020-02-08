@@ -1,6 +1,6 @@
 """
-walk.py
-brython training script
+bx_walk.py
+brython exercise script
 """
 
 from browser import timer, document as doc
@@ -178,5 +178,8 @@ if hasattr(doc, "ch_selector") and doc.ch_selector:
     (row, col) = doc.ch_selector
     if doc.ch_board.figures[row][col]:
         f = doc.ch_board.figures[row][col][-1]
+# actual chessboard into ch variable (for convenience in the console)
+ch = doc.ch_board
+
 
 

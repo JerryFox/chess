@@ -1,6 +1,9 @@
 """
-move_figures.py
-brython training script
+bx_move_figures.py
+Brython eXercise script
+
+timer using
+method adding to an existing object instance
 """
 
 from browser import document as doc, timer

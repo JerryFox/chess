@@ -234,11 +234,20 @@ class ChessFigure:
         if row in range(len(self.chessboard.chessboard)) and col in range(len(self.chessboard.chessboard[row])):
             oldrow = self.row
             oldcol = self.col
-            self.chessboard.figures[self.row][self.col].remove(self)
+            ch = self.chessboard
+            ch.figures[self.row][self.col].remove(self)
             self.row = row
             self.col = col
-            self.chessboard.figures[self.row][self.col].append(self)
+            ch.figures[self.row][self.col].append(self)
             self.moves.append([row, col])
+            # new position
+            self.chessboard.chessboard[row][col] = self.shortcut
+            # old position
+            shortcut = ""
+            if ch.figures[oldrow][oldcol]:
+                shortcut = ch.figures[oldrow][oldcol][-1].shortcut
+            ch.chessboard[oldrow][oldcol] = shortcut
+
             # last_color
             if self.svg_image:
                 # redisplay svg
@@ -262,6 +271,7 @@ class ChessFigure:
 
     def go(self):
         if self.shortcut.upper() == "N":
+            # automatic moving for a knight
             valid_moves = self.get_valid_moves()
             """get_valid
             pos_moves = [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2]]
@@ -299,7 +309,7 @@ class ChessFigure:
                         move = choice(valid_moves)
                     # remove other figure
                     if self.chessboard.figures[move[0]][move[1]]:
-                        self.chessboard.remove_figure(move[0], move[1])
+                        self.chessboard.remove_figure(move[0], move[1], top=True)
                     self.move_to(move[0], move[1])
                     self.idtimer = timer.set_timeout(self.go, self.timer_interval)
             else:
@@ -370,7 +380,7 @@ class Board(Chessboard):
                     else:
                         self.chessboard[row][col] = ch[row][col][-1].shortcut
 
-    def remove_figure(self, row, col=None):
+    def remove_figure(self, row, col=None, top=False):
         """
         remove bottom figure from the cell
         """
@@ -378,9 +388,9 @@ class Board(Chessboard):
             col = row[1]
             row = row[0]
         if self.figures[row][col]:
-            self.figures[row][col][0].svg_image.remove()
-            self.figures[row][col][0].chessboard = None
-            self.figures[row][col].remove(self.figures[row][col][0])
+            self.figures[row][col][0 if not top else -1].svg_image.remove()
+            self.figures[row][col][0 if not top else -1].chessboard = None
+            self.figures[row][col].remove(self.figures[row][col][0 if not top else -1])
             if not self.figures[row][col]:
                 self.chessboard[row][col] = ""
             else:
