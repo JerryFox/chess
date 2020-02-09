@@ -54,3 +54,19 @@ historie příkazů do local storage. Dále je možno využívat vestavěný edi
 do kterého je možno natahovat a spouštět existující skripty ze serveru, a dále psát vlastní skripty 
 a ukládat je do local storage. 
 
+## PythonAnywhere
+
+## Jupyter notebooks
+
+Výukové lekce vytvářim (respektive chtěl bych vytvářet) formou Jupyter notebooků. 
+Určitou komplikací je, že studenti, kteří mají pouze free účet na PythonAnywhere, 
+zde nemohou s notebooky pracovat přímo. To je velká škoda, i když práce s lokální 
+instalací Jupyteru není obtížná. 
+
+- https://github.com/JerryFox/chess/blob/master/chess_exercise01.ipynb
+- https://github.com/JerryFox/chess/blob/master/chess_exercise02.ipynb
+- https://github.com/JerryFox/chess/blob/master/chess_exercise_decorator.ipynb
+
+
+ 
+
