@@ -26,7 +26,7 @@ Při přidávání a ubírání figur je také možno používat souřadnice v n
 
 - požadavky: python 3, Bottle framework - https://bottlepy.org/docs/dev/
 - naklonovat tento repositář
-- upravit config.py
+- upravit config.py, resp. hiddenconfig.py 
 - v adresáři projektu spustit Python (3)
 - import bottle_chess
 - from bottle import run
@@ -50,7 +50,30 @@ Základem aplikace je hra - v tomto případě šachy sloužící jako pískovi�
 určitá sada objektů s nějakou funkcionalitou, která se postupně vyvíjí. 
 Běžný uživatel má možnost přistupovat k těmto objektů a využívat jejich funkcionalitu pomocí 
 pythoní konzole, která je převzata z projektu Brython 3.5, drobně upravena a doplněna o ukládání 
-historie příkazů do local storage. Dále je možno využívat vestavěný editor (ACE, součást Brythonu), 
+historie příkazů do local storage. Dále je možno využívat vestavěný editor 
+(ACE, opensource, implementován v Brythonu), 
 do kterého je možno natahovat a spouštět existující skripty ze serveru, a dále psát vlastní skripty 
 a ukládat je do local storage. 
+
+## PythonAnywhere
+
+Většinová část aplikace byla vyvinuta v prostředí [PythonAnywhere](https://www.pythonanywhere.com/), 
+a proto je s největší pravděpodobností aktuální verze hostována rovněž zde na adrese 
+http://vysoky.pythonanywhere.com/chessboard
+
+
+
+## Jupyter notebooks
+
+Výukové lekce vytvářim (respektive chtěl bych vytvářet) formou Jupyter notebooků. 
+Určitou komplikací je, že studenti, kteří mají pouze free účet na PythonAnywhere, 
+zde nemohou s notebooky pracovat přímo. To je velká škoda, i když práce s lokální 
+instalací Jupyteru není obtížná. 
+
+- https://github.com/JerryFox/chess/blob/master/chess_exercise01.ipynb
+- https://github.com/JerryFox/chess/blob/master/chess_exercise02.ipynb
+- https://github.com/JerryFox/chess/blob/master/chess_exercise_decorator.ipynb
+
+
+ 
 
