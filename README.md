@@ -74,6 +74,9 @@ instalací Jupyteru není obtížná.
 - https://github.com/JerryFox/chess/blob/master/chess_exercise02.ipynb
 - https://github.com/JerryFox/chess/blob/master/chess_exercise_decorator.ipynb
 
+Všeobecné informace o aplikaci by měly být k nalezení zde: 
+
+- https://github.com/JerryFox/chess/blob/master/chess_python_brython.ipynb
 
  
 
