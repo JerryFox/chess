@@ -33,3 +33,24 @@ Při přidávání a ubírání figur je také možno používat souřadnice v n
 - run(host='localhost', port=8080, debug=True)
 - v browseru http://localhost:8080/chessboard
 
+## Brython na frontendu
+
+Veškerý frontend je napsán v [Brythonu](https://brython.info/) - javascriptové implementaci jazyka Python. 
+Na začátku jsem použil javascript, abych viděl, že vše funguje, jak má, 
+nyní už i pro nové věci používám výhradně Brython. 
+
+Motivace k použití Brythonu je dána tím, že tato aplikace je zamýšlena jako cvičná (výuková) 
+pro výuku programování v Pythonu, primárně určená pro studenty IT semináře na SŠ. 
+Proto jsem chtěl, aby i na frontendu, který je většinou pro studenty pochopitelnější 
+a atraktivnější, mohli studenti pracovat v Pythonu. 
+K mému překvapení je běh těchto skriptů jak z hlediska rychlosti tak i spolehlivosti bezproblémový, 
+z mého pohledu je tak Brython použitelný i pro běžné aplikace. 
+
+Základem aplikace je hra - v tomto případě šachy sloužící jako pískoviště, na němž je předpřipravena 
+určitá sada objektů s nějakou funkcionalitou, která se postupně vyvíjí. 
+Běžný uživatel má možnost přistupovat k těmto objektů a využívat jejich funkcionalitu pomocí 
+pythoní konzole, která je převzata z projektu Brython 3.5, drobně upravena a doplněna o ukládání 
+historie příkazů do local storage. Dále je možno využívat vestavěný editor (ACE, součást Brythonu), 
+do kterého je možno natahovat a spouštět existující skripty ze serveru, a dále psát vlastní skripty 
+a ukládat je do local storage. 
+
