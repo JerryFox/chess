@@ -26,7 +26,7 @@ Při přidávání a ubírání figur je také možno používat souřadnice v n
 
 - požadavky: python 3, Bottle framework - https://bottlepy.org/docs/dev/
 - naklonovat tento repositář
-- upravit config.py
+- upravit config.py, resp. hiddenconfig.py 
 - v adresáři projektu spustit Python (3)
 - import bottle_chess
 - from bottle import run
