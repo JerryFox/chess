@@ -71,11 +71,13 @@ def write(data):
 sys.stdout.write = sys.stderr.write = write
 history = []
 
-if "_hist" in storage:
+try:
     h = eval(storage["_hist"])
     for (i, item) in enumerate(h):
         h[i] = item.replace("\\\\n", "\n")
     history = h
+except:
+    pass
 current = len(history)
 
 _status = "main"  # or "block" if typing inside a block
@@ -86,6 +88,7 @@ editor_ns = {'credits':credits,
     'license':license,
     "hist":history,
     '__name__':'__main__'}
+
 
 doc.ch_editor_ns = editor_ns
 
@@ -126,7 +129,7 @@ def myKeyPress(event):
         history.append(currentLine)
         current = len(history)
 
-        storage["_hist"] = str(history[-100:])
+        storage["_hist"] = str(history[-min(len(history), 100):])
 
         if _status == "main" or _status == "3string":
             try:

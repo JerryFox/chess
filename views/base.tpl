@@ -43,7 +43,7 @@ doc['run'].bind('click',editor.run)
 
         <script type="text/python3" src="{{script_folder}}chess_brython.py"></script>
  	</head>
-    <body onload="brython(1)">
+    <body onload="brython({debug:1, indexedDB:false})">
         <div id="chess-outer-container" class="wrapper">
             <div class="gr-header">
                 <button id="but-chessboard-hide-show">chess_hi/sh</button>
