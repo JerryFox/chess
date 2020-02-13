@@ -51,7 +51,13 @@ doc['run'].bind('click',editor.run)
                 <button id="but-fig-count">count fig.</button>
                 <button id="but-go-to-position">goto pos.</button>
                 <button id="but-test">test</button>
-                <input id="import-module" type="text" name="import-module" value="bx_walk" size="10"><br>
+                <input id="import-module" name="import-module" list="import-modules" value="bx" size="10">
+                <datalist id="import-modules">
+                % for bx_file in brython_exercises:
+                    <option value="{{bx_file}}">{{bx_file}}</option>
+                % end
+                </datalist>
+                <br>
                 <button id="but-zoom-out">◀</button>
                 <span id="zoom-display"></span>
                 <button id="but-zoom-in">▶</button>

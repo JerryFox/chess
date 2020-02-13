@@ -93,6 +93,7 @@ def select_element(evt):
         clone.removeAttribute("id")
         selected_element.insertAdjacentElement('beforebegin', clone)
         clone.bind("mousedown", select_element)
+        doc.ch_current_coord = None
     else:
         doc.ch_moving_figure = doc.ch_board.figures[doc.coord[0]][doc.coord[1]][-1]
         doc.ch_board.figures[doc.coord[0]][doc.coord[1]].remove(doc.ch_moving_figure)
@@ -142,7 +143,9 @@ def deselect_element(evt):
         doc.ch_selected_element = None
         x = int(sel_elem.getAttribute("x"))
         x += cm[4]
-        source = doc.ch_current_coord
+        source = None
+        if "ch_current_coord" in dir(doc) and doc.ch_current_coord:
+            source = doc.ch_current_coord
         if x > 810:
             # remove figure
             sel_elem.remove()
@@ -154,6 +157,7 @@ def deselect_element(evt):
             ch.chessboard[source[0]][source[1]] = shortcut
         else:
             if doc.ch_moving_figure:
+                # moving a figure from chessboard
                 #castling = False
                 # move validation
                 if hasattr(doc, "ch_move_validation") and doc.ch_move_validation:
@@ -201,11 +205,13 @@ def deselect_element(evt):
                 doc.ch_moving_figure.row = row
                 doc.ch_moving_figure.col = col
             else:
+                # placing a new figure
                 figure_file = sel_elem.getAttribute("xlink:href")
                 figure_shortcut = figure_file.split("_")[1][:2]
                 figure_shortcut = figure_shortcut[0] if figure_shortcut[1] == "d" else figure_shortcut[0].upper()
                 new_figure = ChessFigure(figure_shortcut, sel_elem, row, col)
                 new_figure.place_on_board(doc.ch_board)
+                doc.ch_new_figure = new_figure
 
 class ChessFigure:
 

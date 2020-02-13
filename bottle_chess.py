@@ -45,7 +45,14 @@ chess.SCRIPT_FOLDER = SCRIPT_FOLDER
 chess.CSS_FOLDER = CSS_FOLDER
 
 
+# list of brython exercises
+@route("/get_brython_exercises")
+def get_bx_list():
+    from exercises import bx_files
+    return json.dumps(bx_files)
 
+
+# database connection test
 @route("/data")
 def sql_data():
     db = MySQLdb.connect(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME)
@@ -127,6 +134,7 @@ def chessboard(position="base"):
         "chessboard": ch.chessboard,
         "position": ch.position,
         "packed_position": ch.get_packed_position(),
+        "brython_exercises": eval(get_bx_list()),
         }
     return template(PROJECT_DIRECTORY + "/views/" + "base", context)
 
