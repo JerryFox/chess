@@ -16,6 +16,8 @@
         <script src="{{script_folder}}ace/ext-language_tools.js" type="text/javascript" charset="uteditorf-8"></script>
         <script src="{{script_folder}}ace/mode-python3.js" type="text/javascript" charset="utf-8"></script>
         <script src="{{script_folder}}ace/snippets/python.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.11/pixi.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/buzz/1.1.10/buzz.min.js"></script>
 
 <script type="text/python3" id="tests_editor">
 from browser import document as doc
